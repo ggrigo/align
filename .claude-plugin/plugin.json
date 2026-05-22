@@ -1,0 +1,23 @@
+{
+  "name": "align",
+  "version": "0.4.0",
+  "description": "Epistemic feedback loop. Rate LLM-generated claims (correct/wrong/almost/nuance/skip) via an interactive HTML form, archive corrections as machine-readable markdown, and feed patterns back into prompts and CLAUDE.md.",
+  "author": {
+    "name": "Georgios Grigoriadis",
+    "email": "ggrigo@gmail.com"
+  },
+  "homepage": "https://github.com/ggrigo/align",
+  "repository": "https://github.com/ggrigo/align",
+  "license": "MIT",
+  "keywords": [
+    "epistemic-feedback",
+    "human-in-the-loop",
+    "evals",
+    "personal-evals",
+    "correction-loop",
+    "claim-rating",
+    "markdown",
+    "calibration",
+    "criteria-drift"
+  ]
+}
