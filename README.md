@@ -40,15 +40,29 @@ A `align/` directory with `.claude-plugin/plugin.json` at root works identically
 ```
 align/
 ├── .claude-plugin/
-│   └── plugin.json          # manifest
+│   └── plugin.json                          # manifest (v0.5.0)
 ├── commands/
-│   └── align.md             # /align slash command (thin entrypoint)
-├── SKILL.md                 # the skill — full execution contract
-├── align-template.html      # interactive feedback form (self-contained HTML)
-└── README.md                # you are here
+│   └── align.md                             # /align slash command (thin entrypoint)
+├── references/
+│   ├── claim-extraction-rhythm.md           # rhythm-specific producer heuristics
+│   ├── archive-format.md                    # manifest schema, file layout, invariants
+│   └── integrations.md                      # TASKS.md, smart-memory queue, /retro
+├── SKILL.md                                 # public Claim Adapter Contract + Phase 1/2 flow
+├── align-template.html                      # interactive feedback form (self-contained HTML asset)
+└── README.md                                # you are here
 ```
 
-Single-skill plugin: `SKILL.md` at root, no `skills/` folder, auto-loaded by Claude Code v2.1.142+.
+Single-skill plugin: `SKILL.md` at root, no `skills/` folder, auto-loaded by Claude Code v2.1.142+. The `references/` files are loaded on demand by Claude when SKILL.md cites them — they're not in the always-loaded context.
+
+## Extending — using /align with a new producer
+
+The skill is source-agnostic by contract. Any producer that emits an array of claim objects matching the Claim Adapter Contract in `SKILL.md` can be aligned. A new producer needs to:
+
+1. Walk its output and identify *falsifiable claims*.
+2. Build the array with required fields (`id`, `text`, `source`) and any useful optional fields (`time`, `icon`, `desc`, `detail`, `categories`, `verifiable`).
+3. Invoke `/align` with a kebab-case context slug.
+
+No instrumentation contract beyond the array. The producer can live in this plugin, in another plugin, or in an ad-hoc Claude turn. Existing non-rhythm producers in the archive: daily todo prints, headcount files, benchmark-design reports.
 
 ## Usage
 
