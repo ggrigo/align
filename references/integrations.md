@@ -89,6 +89,64 @@ At the start of every Phase 2 run where smart-memory tools are available:
 
 If any entry fails to write (e.g., the MCP call errors), leave it in the queue and report the failure with the entry's `claim_id`. Never drop a correction.
 
+## Smart-memory filter (opt-in, v0.7.0+)
+
+By default, claim text and reality notes flow unfiltered into the `decisions` collection. This matches the producer-as-trust-boundary model (see `SECURITY.md` §What this policy doesn't cover). For users whose producers might surface sensitive content (meeting transcripts with attendee names, email bodies, internal discussions, contract amounts), an optional filter step intercepts each write.
+
+The filter is prose, not code. Users declare it in their `CLAUDE.md`; Claude interprets and applies it per-correction. No JavaScript or regex required.
+
+### Enabling the filter
+
+In your `CLAUDE.md`, declare rules under an `<align-smart-memory-filter>` block:
+
+```markdown
+<align-smart-memory-filter>
+For each correction about to be written to smart-memory:
+- Skip writes from the meeting-digest producer where claim_text mentions attendee personal info.
+- For code-review producer: pass through as-is.
+- For any producer: if reality note contains a contract amount in € or $, replace the amount with "[REDACTED]" before writing.
+- Otherwise: write as-is.
+</align-smart-memory-filter>
+```
+
+The rules above are illustrative; the real shape is whatever the user writes. The filter is a free-form natural-language specification that Claude reads, applies per-correction, and treats as authoritative.
+
+### Behavior
+
+Before each `remember_facts()` call (or before each queue append, when smart-memory is unavailable):
+
+1. Read the `<align-smart-memory-filter>` block from the user's `CLAUDE.md`, if present. Cache for the duration of the Phase 2 run.
+2. Apply the rules to the current correction.
+3. Three possible outcomes per correction:
+   - **Write as-is** — payload unchanged.
+   - **Write transformed** — payload uses scrubbed values from the filter.
+   - **Skip** — no smart-memory write. The per-session `.md` archive entry still records the **original**; only the smart-memory layer skips.
+4. The Phase 2 summary names the count of filtered / skipped writes:
+   - *"Wrote 12 corrections to smart-memory; 3 transformed by filter, 1 skipped."*
+
+### Filter applies before the queue too
+
+When smart-memory is unavailable and writes go to `align-corrections-pending.md`, the filter still applies before the queue append. Queued entries are already filter-processed; the drain protocol calls `remember_facts()` on them without re-filtering. This keeps the filter's surface consistent regardless of MCP availability.
+
+### What the filter does NOT do
+
+- **Does not affect the per-session `.md` archive.** The archive is the source of truth and remains complete. The smart-memory layer is the convenience write.
+- **Does not enforce filtering across producers.** The trust boundary remains the producer; the filter is a defense-in-depth opt-in, not a guarantee.
+- **Does not prevent `/retro` from clustering on filtered content.** `/retro` reads the archive, not smart-memory; filtered/skipped corrections still surface in `/retro` synthesis.
+- **Does not validate the user's rules.** If the rules are ambiguous, Claude interprets in good faith and reports the interpretation in the Phase 2 summary so the user can adjust.
+
+If no filter is declared in `CLAUDE.md`, behavior is identical to v0.6.0 (unfiltered).
+
+### Audit trail
+
+For each correction processed, the Phase 2 summary should note:
+- Total corrections processed
+- Count written as-is
+- Count written transformed (with anonymized example: "1 reality note scrubbed of contract amount")
+- Count skipped (with reason summarized from the rule that matched)
+
+This gives the user a per-session view of what the filter did, without leaking the original sensitive content.
+
 ## /retro integration
 
 `/retro` is the downstream consumer that turns the archive into prompt patches and rules. It is a separate skill (currently planned, not built; design at `references/retro-design.md`). Its contract with /align:
