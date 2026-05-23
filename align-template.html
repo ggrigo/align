@@ -469,7 +469,7 @@ function exportMd() {
   const ctxSlug = document.getElementById('contextSlug').value || 'session';
 
   const statusMap = { correct: '✅ Correct', wrong: '❌ Wrong', almost: '🔶 Almost', nuance: '🔷 Needs nuance', unknown: '🤷 Can\'t verify', irrelevant: '➖ Irrelevant', skip: '⬜ Skipped' };
-  const counts = { correct: 0, wrong: 0, almost: 0, nuance: 0, unknown: 0, skip: 0, unrated: 0 };
+  const counts = { correct: 0, wrong: 0, almost: 0, nuance: 0, unknown: 0, irrelevant: 0, skip: 0, unrated: 0 };
   claims.forEach(c => { if (c.rating) counts[c.rating]++; else counts.unrated++; });
 
   let md = '# Alignment Feedback — ' + date + '\n';

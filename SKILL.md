@@ -165,7 +165,8 @@ The user can also hand off explicitly: "I saved it to /tmp/foo.md" — accept an
 
 #### Step 2 — Read and parse
 
-The `.md` has three named sections (export format from the template):
+The `.md` has four named sections (export format from the template):
+- `## Summary` — table of status counts per category. Useful for `/retro`-style passes that want per-session metrics without parsing per-claim ratings.
 - `## Corrections Required` — claims marked wrong / almost / needs-nuance, each with a Reality note from the user.
 - `## Confirmed / Other` — claims marked correct, irrelevant, skipped, or can't-verify.
 - `## Missing — Not Captured` — items the user added that weren't in the original output.
