@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Align — {{CONTEXT}}</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; background: #f7f7f5; color: #1a1a1a; -webkit-tap-highlight-color: transparent; }
+
+  /* ── Header ── */
+  .header { padding: 1rem 1.25rem; border-bottom: 1px solid #e5e5e3; position: sticky; top: 0; background: #f7f7f5; z-index: 10; }
+  .header h1 { color: #111; font-size: 1.15rem; font-weight: 600; padding-right: 9rem; }
+  .header .meta { color: #888; font-size: 0.72rem; margin-top: 0.15rem; display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; padding-right: 9rem; }
+  .header-download { position: absolute; top: 0.85rem; right: 1.25rem; background: #111; color: #fff; border: none; padding: 0.5rem 0.8rem; border-radius: 7px; font-size: 0.76rem; font-weight: 600; cursor: pointer; z-index: 11; }
+  .header-download:hover { background: #333; }
+  .header-download:active { transform: scale(0.97); }
+  .tag { display: inline-block; padding: 0.1rem 0.4rem; border-radius: 10px; font-size: 0.6rem; font-weight: 500; }
+  .tag-src { background: #e8f0fe; color: #1a73e8; }
+  .tag-cat { background: #f3e8ff; color: #7c3aed; }
+  .tag-file { background: #fef3c7; color: #b45309; }
+  .tag-acc { background: #dcfce7; color: #16a34a; }
+
+  /* ── Sticky summary bar (mobile) ── */
+  .summary-bar { position: sticky; top: 48px; background: #fff; z-index: 9; padding: 0.5rem 1.25rem; border-bottom: 1px solid #e5e5e3; display: flex; align-items: center; gap: 0.6rem; font-size: 0.7rem; }
+  .summary-bar .s { color: #999; }
+  .summary-bar .v { font-weight: 600; color: #555; }
+  .progress-bar { flex: 1; height: 3px; background: #e5e5e3; border-radius: 2px; overflow: hidden; display: flex; }
+  .progress-bar .seg-correct { background: #22c55e; }
+  .progress-bar .seg-wrong { background: #ef4444; }
+  .progress-bar .seg-almost { background: #f59e0b; }
+  .progress-bar .seg-nuance { background: #6366f1; }
+  .progress-bar .seg-skip { background: #9ca3af; }
+  .progress-bar .seg-unknown { background: #a78bfa; }
+
+  /* ── Claims panel ── */
+  .container { display: block; }
+  .claims-panel { padding: 0.5rem 0.75rem 140px; max-width: 720px; margin: 0 auto; }
+
+  /* ── Claim card ── */
+  .claim { background: #fff; border: 1px solid #e5e5e3; border-radius: 10px; margin-bottom: 0.5rem; overflow: hidden; transition: border-color 0.15s, opacity 0.15s; }
+  .claim.correct { border-left: 3px solid #22c55e; }
+  .claim.wrong { border-left: 3px solid #ef4444; }
+  .claim.almost { border-left: 3px solid #f59e0b; }
+  .claim.nuance { border-left: 3px solid #6366f1; }
+  .claim.unknown { border-left: 3px solid #a78bfa; }
+  .claim.rated { opacity: 0.55; }
+  .claim.rated:hover, .claim.rated.expanded { opacity: 1; }
+  .claim.focused { opacity: 1; box-shadow: 0 0 0 2px #6366f1; }
+
+  .claim-main { padding: 0.7rem 0.9rem; cursor: pointer; }
+  .claim-time { font-size: 0.65rem; color: #999; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .claim-id { font-size: 0.65rem; color: #aaa; font-weight: 600; }
+  .claim-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.15rem; }
+  .claim-text { font-size: 0.85rem; color: #222; font-weight: 500; margin: 0.15rem 0 0.25rem; line-height: 1.45; }
+  .claim-source { font-size: 0.7rem; color: #999; line-height: 1.4; }
+  .claim-tags { margin-top: 0.4rem; display: flex; gap: 0.25rem; flex-wrap: wrap; }
+
+  /* ── Expandable detail ── */
+  .claim-detail { display: none; border-top: 1px solid #f0f0ee; padding: 0.7rem 0.9rem; background: #fafaf8; }
+  .claim.expanded .claim-detail { display: block; }
+  .detail-label { font-size: 0.65rem; color: #999; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.2rem; margin-top: 0.6rem; }
+  .detail-label:first-child { margin-top: 0; }
+  .detail-content { font-size: 0.8rem; color: #666; line-height: 1.5; white-space: pre-wrap; word-break: break-word; }
+  .detail-content a { color: #6366f1; text-decoration: none; }
+  .detail-link { display: inline-block; margin-top: 0.3rem; font-size: 0.75rem; color: #6366f1; text-decoration: none; }
+
+  /* ── Rating controls ── */
+  .claim-controls { border-top: 1px solid #f0f0ee; padding: 0.4rem 0.6rem; display: flex; gap: 0.2rem; }
+  .r-btn { flex: 1; background: #f3f4f6; border: 1px solid transparent; color: #9ca3af; padding: 0.38rem; border-radius: 6px; font-size: 0.65rem; cursor: pointer; text-align: center; -webkit-user-select: none; user-select: none; transition: all 0.1s; }
+  .r-btn:active { transform: scale(0.95); }
+  .r-btn.sel-correct { background: #dcfce7; border-color: #86efac; color: #16a34a; font-weight: 600; }
+  .r-btn.sel-wrong { background: #fee2e2; border-color: #fca5a5; color: #dc2626; font-weight: 600; }
+  .r-btn.sel-almost { background: #fef3c7; border-color: #fcd34d; color: #d97706; font-weight: 600; }
+  .r-btn.sel-nuance { background: #e0e7ff; border-color: #a5b4fc; color: #4f46e5; font-weight: 600; }
+  .r-btn.sel-skip { background: #f3f4f6; border-color: #d1d5db; color: #6b7280; font-weight: 600; }
+  .r-btn.sel-unknown { background: #ede9fe; border-color: #c4b5fd; color: #7c3aed; font-weight: 600; }
+
+  /* ── Machine-only badge ── */
+  .badge-machine { display: inline-block; padding: 0.05rem 0.35rem; border-radius: 10px; font-size: 0.55rem; font-weight: 600; background: #ede9fe; color: #7c3aed; margin-left: 0.4rem; vertical-align: middle; }
+
+  /* ── Notes ── */
+  .claim-notes { border-top: 1px solid #f0f0ee; padding: 0.5rem 0.7rem; display: none; }
+  .claim-notes.visible { display: block; }
+  .claim-notes textarea { width: 100%; background: #fafaf8; border: 1px solid #e5e5e3; border-radius: 6px; color: #333; padding: 0.4rem; font-size: 0.8rem; font-family: inherit; resize: none; min-height: 44px; }
+  .claim-notes textarea:focus { border-color: #6366f1; outline: none; box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.15); }
+  .claim-notes textarea::placeholder { color: #bbb; }
+
+  /* ── Pattern alerts ── */
+  .pattern-alert { background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px; padding: 0.5rem 0.7rem; margin: 0.5rem 0.75rem; font-size: 0.75rem; color: #92400e; }
+  .pattern-alert strong { color: #78350f; }
+
+  /* ── FABs (mobile) ── */
+  .fab-row { position: fixed; bottom: 1rem; right: 1rem; display: flex; gap: 0.5rem; z-index: 15; }
+  .fab { width: 44px; height: 44px; border-radius: 50%; border: none; font-size: 1.1rem; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.12); display: flex; align-items: center; justify-content: center; }
+  .fab-add { background: #fff; color: #666; font-size: 1.3rem; border: 1px solid #e5e5e3; }
+  .fab-export { background: #111; color: #fff; }
+  .fab-export:disabled { background: #e5e5e3; color: #bbb; box-shadow: none; }
+
+  /* ── Bottom sheet (mobile missing items) ── */
+  .bottom-sheet { position: fixed; bottom: 0; left: 0; right: 0; background: #fff; border-top: 1px solid #e5e5e3; padding: 1rem; z-index: 20; transform: translateY(100%); transition: transform 0.25s ease; max-width: 720px; margin: 0 auto; box-shadow: 0 -4px 16px rgba(0,0,0,0.08); }
+  .bottom-sheet.open { transform: translateY(0); }
+  .bottom-sheet h3 { color: #222; font-size: 0.85rem; margin-bottom: 0.5rem; }
+  .bottom-sheet textarea { width: 100%; background: #fafaf8; border: 1px solid #e5e5e3; border-radius: 6px; color: #333; padding: 0.5rem; font-size: 0.85rem; font-family: inherit; resize: none; min-height: 60px; }
+  .bottom-sheet textarea:focus { border-color: #6366f1; outline: none; }
+  .sheet-actions { display: flex; gap: 0.5rem; margin-top: 0.5rem; }
+  .sheet-btn { flex: 1; padding: 0.45rem; border-radius: 6px; font-size: 0.8rem; font-weight: 600; cursor: pointer; text-align: center; border: none; }
+  .sheet-btn-close { background: #f3f4f6; color: #555; }
+  .sheet-btn-save { background: #111; color: #fff; }
+
+  /* ── Desktop: two-panel layout ── */
+  @media (min-width: 768px) {
+    .summary-bar { display: none; }
+    .container { display: flex; height: calc(100vh - 52px); }
+    .claims-panel { flex: 1; overflow-y: auto; padding: 1rem; padding-bottom: 2rem; max-width: none; }
+    .summary-panel { display: block; width: 300px; padding: 1.25rem; overflow-y: auto; background: #fff; border-left: 1px solid #e5e5e3; flex-shrink: 0; }
+    .fab-row { display: none; }
+    .keyboard-hint { display: block; }
+    .claim-main { padding: 0.8rem 1rem; }
+    .r-btn { padding: 0.4rem; font-size: 0.7rem; }
+  }
+  @media (max-width: 767px) {
+    .container { display: block; }
+    .summary-panel { display: none; }
+    .keyboard-hint { display: none; }
+  }
+
+  /* ── Desktop side panel ── */
+  .summary-panel { display: none; }
+  .summary-panel h2 { color: #111; font-size: 1rem; margin-bottom: 0.75rem; }
+  .summary-panel h3 { color: #999; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.05em; margin: 1rem 0 0.4rem; }
+  .stat-row { display: flex; justify-content: space-between; padding: 0.25rem 0; font-size: 0.8rem; }
+  .stat-label { color: #888; }
+  .stat-value { color: #222; font-weight: 600; }
+  .desktop-progress { height: 5px; background: #e5e5e3; border-radius: 3px; margin: 0.6rem 0; overflow: hidden; display: flex; }
+  .desktop-progress .seg-correct { background: #22c55e; }
+  .desktop-progress .seg-wrong { background: #ef4444; }
+  .desktop-progress .seg-almost { background: #f59e0b; }
+  .desktop-progress .seg-nuance { background: #6366f1; }
+  .desktop-progress .seg-skip { background: #9ca3af; }
+  .desktop-progress .seg-unknown { background: #a78bfa; }
+  .missing-section { margin-top: 1.25rem; }
+  .missing-input { width: 100%; background: #fafaf8; border: 1px solid #e5e5e3; border-radius: 6px; color: #333; padding: 0.5rem; font-size: 0.8rem; font-family: inherit; resize: vertical; min-height: 70px; }
+  .missing-input:focus { border-color: #6366f1; outline: none; box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.15); }
+  .missing-input::placeholder { color: #bbb; }
+  .export-btn { width: 100%; margin-top: 1.25rem; background: #111; border: 1px solid #111; color: #fff; padding: 0.55rem; border-radius: 6px; font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: background 0.2s; }
+  .export-btn:hover { background: #333; }
+  .export-btn:disabled { background: #e5e5e3; border-color: #e5e5e3; color: #bbb; cursor: not-allowed; }
+  .keyboard-hint { color: #bbb; font-size: 0.65rem; margin-top: 0.5rem; text-align: center; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Align — <span id="h-context">{{CONTEXT}}</span></h1>
+  <div class="meta">
+    <span id="h-date">{{DATE}}</span>
+    <span class="tag tag-src" id="h-count">0 claims</span>
+    <span class="tag tag-src" id="h-source">{{SOURCE}}</span>
+    <span class="tag tag-acc" id="h-accuracy" style="display:none"></span>
+  </div>
+  <button class="header-download" id="g-export" onclick="exportMd()">⤓ Download .md</button>
+</div>
+<input type="hidden" id="contextSlug" value="{{CONTEXT_SLUG}}">
+
+<!-- Mobile: sticky summary bar -->
+<div class="summary-bar">
+  <span class="v" id="m-rated">0</span><span class="s">rated</span>
+  <div class="progress-bar" id="m-progress"></div>
+  <span class="v" id="m-accuracy">--</span>
+</div>
+
+<div id="m-alerts"></div>
+
+<div class="container">
+  <div class="claims-panel" id="claims"></div>
+
+  <!-- Desktop: side panel -->
+  <div class="summary-panel">
+    <h2>Review</h2>
+    <div class="stat-row"><span class="stat-label">Total</span><span class="stat-value" id="s-total">0</span></div>
+    <div class="stat-row"><span class="stat-label">Rated</span><span class="stat-value" id="s-rated">0</span></div>
+    <div class="desktop-progress" id="d-progress"></div>
+    <div class="stat-row"><span class="stat-label">Correct</span><span class="stat-value" id="s-correct" style="color:#16a34a">0</span></div>
+    <div class="stat-row"><span class="stat-label">Wrong</span><span class="stat-value" id="s-wrong" style="color:#dc2626">0</span></div>
+    <div class="stat-row"><span class="stat-label">Almost</span><span class="stat-value" id="s-almost" style="color:#d97706">0</span></div>
+    <div class="stat-row"><span class="stat-label">Nuance</span><span class="stat-value" id="s-nuance" style="color:#4f46e5">0</span></div>
+    <div class="stat-row"><span class="stat-label">Skip</span><span class="stat-value" id="s-skip" style="color:#9ca3af">0</span></div>
+    <div class="stat-row"><span class="stat-label">Can't verify</span><span class="stat-value" id="s-unknown" style="color:#7c3aed">0</span></div>
+    <h3>Accuracy</h3>
+    <div class="stat-row"><span class="stat-label">Score</span><span class="stat-value" id="s-accuracy">--</span></div>
+    <div id="d-alerts"></div>
+    <div class="missing-section">
+      <h3>Missing — not captured</h3>
+      <textarea class="missing-input" id="d-missing" placeholder="What happened that wasn't captured? One item per line."></textarea>
+    </div>
+    <button class="export-btn" id="d-export" onclick="exportMd()">Download align.md</button>
+    <div class="keyboard-hint">↑↓ navigate · 1-6 rate · E expand · N notes</div>
+  </div>
+</div>
+
+<!-- Mobile: FABs -->
+<div class="fab-row">
+  <button class="fab fab-add" onclick="toggleSheet()">+</button>
+  <button class="fab fab-export" id="m-export" onclick="exportMd()">&#x2913;</button>
+</div>
+
+<!-- Mobile: bottom sheet for missing items -->
+<div class="bottom-sheet" id="sheet">
+  <h3>Missing — not captured</h3>
+  <textarea id="m-missing" placeholder="What happened that wasn't captured? One per line."></textarea>
+  <div class="sheet-actions">
+    <button class="sheet-btn sheet-btn-close" onclick="toggleSheet()">Close</button>
+    <button class="sheet-btn sheet-btn-save" onclick="toggleSheet()">Done</button>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════════════
+// ALIGN TEMPLATE v0.4.1
+// v0.4.1 (2026-05-20): always-visible header Download button
+//   (#g-export), present on every screen width and always enabled.
+//   Export controls no longer disable until a claim is rated.
+//   Driven by the team-lineup /align session — the download
+//   control was not discoverable.
+// Source-agnostic correction form. Claims are injected as a JS
+// array by the /align skill. Each claim has:
+//   id, text, source, detail (optional), time (optional),
+//   categories (optional), files (optional), link (optional),
+//   verifiable (optional, boolean — false = machine-only evidence)
+// ══════════════════════════════════════════════════════════════
+
+// ── Claims array — populated by skill ──
+// {{CLAIMS_INJECT}}
+// The skill replaces the line below with: const claims = [...];
+const claims = [];
+
+// ── Constants ──
+const RATINGS = ['correct', 'wrong', 'almost', 'nuance', 'unknown', 'skip'];
+const R_LABELS = { correct: '✅', wrong: '❌', almost: '🟡', nuance: '🔵', unknown: '🤷', skip: '⏭️' };
+const R_NAMES = { correct: 'Correct', wrong: 'Wrong', almost: 'Almost', nuance: 'Nuance', unknown: "Can't verify", skip: 'Skip' };
+const R_KEYS = { '1': 'correct', '2': 'wrong', '3': 'almost', '4': 'nuance', '5': 'unknown', '6': 'skip' };
+const ICON_MAP = { calendar: '📅', gmail: '📧', slack: '💬', fireflies: '🎙️', drive: '📁', fabric: '🧵', rhythm: '🥁', commitment: '🤝', briefing: '📋' };
+
+let focused = 0;
+
+// ── Init ──
+function init() {
+  claims.forEach((c, i) => {
+    c._idx = i;
+    c.notes = c.notes || '';
+    c._expanded = false;
+    // Pre-tag machine-only claims as "can't verify"
+    if (c.verifiable === false) {
+      c.rating = c.rating || 'unknown';
+    } else {
+      c.rating = c.rating || null;
+    }
+  });
+  document.getElementById('h-count').textContent = claims.length + ' claims';
+  document.getElementById('s-total').textContent = claims.length;
+  render();
+  updateSummary();
+}
+
+// ── Render claims ──
+function render() {
+  const panel = document.getElementById('claims');
+  panel.textContent = '';
+
+  claims.forEach((c, i) => {
+    const card = document.createElement('div');
+    card.className = 'claim'
+      + (c.rating ? ' rated ' + c.rating : '')
+      + (c._expanded ? ' expanded' : '')
+      + (i === focused ? ' focused' : '');
+    card.id = 'c-' + i;
+
+    // Main content (clickable to expand)
+    const main = document.createElement('div');
+    main.className = 'claim-main';
+    main.onclick = () => { c._expanded = !c._expanded; focused = i; render(); };
+
+    // Header row: id/time + source
+    const header = document.createElement('div');
+    header.className = 'claim-header';
+    const idEl = document.createElement('span');
+    idEl.className = c.time ? 'claim-time' : 'claim-id';
+    idEl.textContent = c.time || ('Claim ' + c.id);
+    header.appendChild(idEl);
+    if (c.verifiable === false) {
+      const badge = document.createElement('span');
+      badge.className = 'badge-machine';
+      badge.textContent = 'machine-only';
+      badge.title = 'This claim is sourced from data only Claude can see (filesystem, smart-memory, inference). Pre-rated as "can\'t verify" — override if you happen to know.';
+      header.appendChild(badge);
+    }
+    if (c.source) {
+      const srcEl = document.createElement('span');
+      srcEl.className = 'claim-id';
+      srcEl.textContent = c.source;
+      srcEl.style.color = '#8b949e';
+      header.appendChild(srcEl);
+    }
+    main.appendChild(header);
+
+    // Claim text
+    const text = document.createElement('div');
+    text.className = 'claim-text';
+    const icon = c.icon ? (ICON_MAP[c.icon] || '') + ' ' : '';
+    text.textContent = icon + c.text;
+    main.appendChild(text);
+
+    // Optional description (below claim text, lighter)
+    if (c.desc) {
+      const desc = document.createElement('div');
+      desc.className = 'claim-source';
+      desc.textContent = c.desc;
+      main.appendChild(desc);
+    }
+
+    // Tags (categories + files)
+    if ((c.categories && c.categories.length) || (c.files && c.files.length)) {
+      const tags = document.createElement('div');
+      tags.className = 'claim-tags';
+      (c.categories || []).forEach(cat => {
+        const t = document.createElement('span');
+        t.className = 'tag tag-cat';
+        t.textContent = cat;
+        tags.appendChild(t);
+      });
+      (c.files || []).forEach(f => {
+        const t = document.createElement('span');
+        t.className = 'tag tag-file';
+        t.textContent = f;
+        tags.appendChild(t);
+      });
+      main.appendChild(tags);
+    }
+    card.appendChild(main);
+
+    // Expandable detail
+    if (c.detail || c.attendees || c.link) {
+      const detail = document.createElement('div');
+      detail.className = 'claim-detail';
+      if (c.detail) {
+        const lbl = document.createElement('div'); lbl.className = 'detail-label'; lbl.textContent = 'Full content'; detail.appendChild(lbl);
+        const cnt = document.createElement('div'); cnt.className = 'detail-content'; cnt.textContent = c.detail; detail.appendChild(cnt);
+      }
+      if (c.attendees) {
+        const lbl = document.createElement('div'); lbl.className = 'detail-label'; lbl.textContent = 'Attendees'; detail.appendChild(lbl);
+        const cnt = document.createElement('div'); cnt.className = 'detail-content'; cnt.textContent = c.attendees; detail.appendChild(cnt);
+      }
+      if (c.link) {
+        const a = document.createElement('a'); a.className = 'detail-link'; a.textContent = 'Open source ↗';
+        try { const u = new URL(c.link); if (u.protocol === 'https:' || u.protocol === 'http:') a.href = c.link; } catch (e) {}
+        a.target = '_blank'; a.rel = 'noopener noreferrer'; detail.appendChild(a);
+      }
+      card.appendChild(detail);
+    }
+
+    // Rating buttons
+    const controls = document.createElement('div');
+    controls.className = 'claim-controls';
+    RATINGS.forEach(r => {
+      const btn = document.createElement('button');
+      btn.className = 'r-btn' + (c.rating === r ? ' sel-' + r : '');
+      btn.textContent = R_LABELS[r];
+      btn.title = R_NAMES[r] + ' (' + (RATINGS.indexOf(r) + 1) + ')';
+      btn.onclick = (e) => { e.stopPropagation(); rate(i, r); };
+      controls.appendChild(btn);
+    });
+    card.appendChild(controls);
+
+    // Notes (visible for wrong/almost/nuance)
+    const notes = document.createElement('div');
+    notes.className = 'claim-notes' + (c.rating && c.rating !== 'correct' && c.rating !== 'skip' && c.rating !== 'unknown' ? ' visible' : '');
+    const ta = document.createElement('textarea');
+    ta.placeholder = "What's the real story?";
+    ta.value = c.notes;
+    ta.oninput = (e) => { c.notes = e.target.value; };
+    ta.onclick = (e) => e.stopPropagation();
+    ta.id = 'notes-' + i;
+    notes.appendChild(ta);
+    card.appendChild(notes);
+
+    panel.appendChild(card);
+  });
+}
+
+// ── Rate a claim ──
+function rate(idx, rating) {
+  claims[idx].rating = claims[idx].rating === rating ? null : rating;
+  if (claims[idx].rating && idx < claims.length - 1) focused = idx + 1;
+  render();
+  updateSummary();
+  if (claims[idx].rating) {
+    const next = document.getElementById('c-' + focused);
+    if (next) next.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+}
+
+// ── Update summary stats ──
+function updateSummary() {
+  const counts = { correct: 0, wrong: 0, almost: 0, nuance: 0, unknown: 0, skip: 0 };
+  let unrated = 0;
+  claims.forEach(c => { if (c.rating) counts[c.rating]++; else unrated++; });
+  const rated = claims.length - unrated;
+  const scoreable = rated - counts.skip - counts.unknown;
+  const accuracy = scoreable > 0 ? Math.round(counts.correct / scoreable * 100) + '%' : '--';
+
+  // Desktop panel
+  document.getElementById('s-rated').textContent = rated + ' / ' + claims.length;
+  document.getElementById('s-correct').textContent = counts.correct;
+  document.getElementById('s-wrong').textContent = counts.wrong;
+  document.getElementById('s-almost').textContent = counts.almost;
+  document.getElementById('s-nuance').textContent = counts.nuance;
+  document.getElementById('s-skip').textContent = counts.skip;
+  document.getElementById('s-unknown').textContent = counts.unknown;
+  document.getElementById('s-accuracy').textContent = accuracy;
+
+  // Mobile bar
+  document.getElementById('m-rated').textContent = rated;
+  document.getElementById('m-accuracy').textContent = accuracy;
+
+  // Header accuracy tag
+  const accTag = document.getElementById('h-accuracy');
+  if (rated > 0) { accTag.style.display = 'inline-block'; accTag.textContent = accuracy + ' accuracy'; }
+  else { accTag.style.display = 'none'; }
+
+  // Progress bars
+  function fillBar(el) {
+    el.textContent = '';
+    RATINGS.forEach(r => {
+      if (counts[r] > 0) {
+        const seg = document.createElement('div');
+        seg.className = 'seg-' + r;
+        seg.style.width = (counts[r] / claims.length * 100) + '%';
+        el.appendChild(seg);
+      }
+    });
+  }
+  fillBar(document.getElementById('m-progress'));
+  fillBar(document.getElementById('d-progress'));
+
+  // Pattern alerts
+  ['m-alerts', 'd-alerts'].forEach(id => {
+    const el = document.getElementById(id);
+    el.textContent = '';
+    if (counts.wrong >= 3) {
+      const alert = document.createElement('div');
+      alert.className = 'pattern-alert';
+      alert.innerHTML = '<strong>Pattern:</strong> ' + counts.wrong + ' wrong claims. Check notes for systematic cause.';
+      el.appendChild(alert);
+    }
+  });
+
+  // Export controls stay enabled at all times — the Download button is never gated.
+}
+
+// ── Toggle missing sheet (mobile) ──
+function toggleSheet() {
+  document.getElementById('sheet').classList.toggle('open');
+}
+
+// ── Export corrections as align-{context}-{date}.md ──
+function exportMd() {
+  const date = document.getElementById('h-date').textContent;
+  const context = document.getElementById('h-context').textContent;
+  const source = document.getElementById('h-source').textContent;
+  const ctxSlug = document.getElementById('contextSlug').value || 'session';
+
+  const statusMap = { correct: '✅ Correct', wrong: '❌ Wrong', almost: '🔶 Almost', nuance: '🔷 Needs nuance', unknown: '🤷 Can\'t verify', irrelevant: '➖ Irrelevant', skip: '⬜ Skipped' };
+  const counts = { correct: 0, wrong: 0, almost: 0, nuance: 0, unknown: 0, irrelevant: 0, skip: 0, unrated: 0 };
+  claims.forEach(c => { if (c.rating) counts[c.rating]++; else counts.unrated++; });
+
+  let md = '# Alignment Feedback — ' + date + '\n';
+  md += 'Context: ' + context + '\n';
+  md += 'Source: ' + source + '\n';
+  // Timezone resolution: the skill substitutes {{TIMEZONE}} with an IANA name (e.g.,
+  // "Europe/Athens") to lock the timestamp to a specific zone. If the placeholder is
+  // left unsubstituted (or is empty), fall back to the browser's local timezone — a
+  // safe default for users who haven't configured one.
+  const tz = '{{TIMEZONE}}';
+  const tzOpts = (tz && !tz.startsWith('{{')) ? { timeZone: tz } : {};
+  md += 'Generated: ' + new Date().toLocaleString('en-GB', tzOpts) + '\n\n';
+
+  // Summary table
+  md += '## Summary\n';
+  md += '| Status | Count |\n|--------|-------|\n';
+  Object.entries(counts).forEach(([k, v]) => {
+    if (v > 0) md += '| ' + (statusMap[k] || '⬜ ' + k) + ' | ' + v + ' |\n';
+  });
+  md += '\n';
+
+  // Corrections required
+  const actionable = claims.filter(c => ['wrong', 'almost', 'nuance'].includes(c.rating));
+  if (actionable.length > 0) {
+    md += '## Corrections Required\n\n';
+    actionable.forEach(c => {
+      md += '### Claim ' + c.id + ': ' + (statusMap[c.rating] || c.rating) + '\n';
+      md += '> ' + c.text + '\n';
+      if (c.source) md += '> *' + c.source + '*\n';
+      md += '\n';
+      md += '**Reality:** ' + (c.notes || '*(no notes provided)*') + '\n\n';
+    });
+  }
+
+  // Confirmed / other
+  const confirmed = claims.filter(c => c.rating && !['wrong', 'almost', 'nuance'].includes(c.rating));
+  if (confirmed.length > 0) {
+    md += '## Confirmed / Other\n\n';
+    confirmed.forEach(c => {
+      md += '- **Claim ' + c.id + '** ' + (statusMap[c.rating] || c.rating) + ': ' + c.text;
+      if (c.notes) md += ' — *' + c.notes + '*';
+      md += '\n';
+    });
+    md += '\n';
+  }
+
+  // Missing items
+  const missingDesktop = (document.getElementById('d-missing') || {}).value || '';
+  const missingMobile = (document.getElementById('m-missing') || {}).value || '';
+  const missing = (missingDesktop.trim() || missingMobile.trim());
+  if (missing) {
+    md += '## Missing — Not Captured\n\n';
+    missing.split('\n').forEach(m => {
+      if (m.trim()) md += '- ' + m.trim() + '\n';
+    });
+    md += '\n';
+  }
+
+  md += '---\n*Feedback generated via /align. Apply corrections to TASKS.md, smart-memory, and future rhythm outputs.*\n';
+
+  // Download
+  const blob = new Blob([md], { type: 'text/markdown' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const dateSlug = date.replace(/[^0-9-]/g, '').replace(/^-+|-+$/g, '') || new Date().toISOString().slice(0, 10);
+  a.href = url;
+  a.download = 'align-' + ctxSlug + '-' + dateSlug + '.md';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+// ── Keyboard shortcuts (desktop) ──
+document.addEventListener('keydown', (e) => {
+  if (e.target.tagName === 'TEXTAREA' || e.target.tagName === 'INPUT') return;
+
+  if (R_KEYS[e.key]) {
+    rate(focused, R_KEYS[e.key]);
+  } else if (e.key === 'ArrowDown' && focused < claims.length - 1) {
+    focused++;
+    render();
+    document.getElementById('c-' + focused).scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  } else if (e.key === 'ArrowUp' && focused > 0) {
+    focused--;
+    render();
+    document.getElementById('c-' + focused).scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  } else if (e.key === 'e' || e.key === 'E') {
+    claims[focused]._expanded = !claims[focused]._expanded;
+    render();
+  } else if (e.key === 'n' || e.key === 'N') {
+    const notes = document.getElementById('notes-' + focused);
+    if (notes) notes.focus();
+  }
+});
+
+// Auto-init
+document.addEventListener('DOMContentLoaded', init);
+</script>
+
+</body>
+</html>
