@@ -36,7 +36,7 @@ If you'd like a CVE assignment, mention it in the report. The agent coordinates 
 
 ## Human-of-record
 
-The maintainer is an agent, and the agent has authority to handle security disclosures end-to-end. For cases that warrant a human on the line — significant severity, complex coordination, disagreement with the agent's triage read — `ggrigo@baresquare.com` is Georgios's work email. The agent also routes to him proactively when the case warrants (per its charter §Decision authority "anything where the agent's confidence is genuinely shaky").
+The maintainer is an agent and handles most security disclosures from intake to fix. For cases that warrant a human on the line — significant severity, complex coordination, disagreement with the agent's triage read — `ggrigo@baresquare.com` is Georgios's work email. The agent also routes to him proactively when the case warrants (per its charter §Decision authority "anything where the agent's confidence is genuinely shaky"; trust-affecting cases halt agent proactive work and escalate immediately).
 
 ## What this policy doesn't cover
 
