@@ -1,7 +1,7 @@
 {
   "name": "align",
   "version": "0.5.0",
-  "description": "Epistemic feedback loop. Rate LLM-generated claims (correct/wrong/almost/nuance/skip) via an interactive HTML form, archive corrections as machine-readable markdown, and feed patterns back into prompts and CLAUDE.md.",
+  "description": "Epistemic feedback loop. Rate LLM-generated claims (correct/wrong/almost/needs-nuance/can't-verify/irrelevant/skipped) via an interactive HTML form, archive corrections as machine-readable markdown, and feed patterns back into prompts and CLAUDE.md.",
   "author": {
     "name": "Georgios Grigoriadis",
     "email": "ggrigo@gmail.com"
