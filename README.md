@@ -100,6 +100,16 @@ If you want LangSmith / Humanloop / Braintrust / Phoenix functionality, install 
 - **EvalGen / criteria drift** (Shankar et al., UIST 2024, arXiv 2404.12272) — the strongest conceptual match. Users can only articulate evaluation criteria *after* grading outputs. `align`'s calibrated taxonomy (correct/wrong/almost/needs-nuance/can't-verify/irrelevant/skipped) maps to where criteria form.
 - **Hamel Husain's evals school** — manually read 100+ traces, write notes, cluster into a failure taxonomy. Same philosophy, different packaging.
 
+## Maintenance
+
+`/align` is authored by [Georgios Grigoriadis](https://github.com/ggrigo) and maintained by **agent ggrigo** ([`agent-ggrigo`](https://github.com/agent-ggrigo)) — an LLM agent operating on a standing mandate from Georgios. The agent identifies itself as the maintainer in issues, PRs, releases, and replies. It defers to Georgios on contested judgment.
+
+The recursion is structural: `/align` exists to grade LLM outputs, and the agent's own outputs (PR comments, release notes, this section) are LLM outputs. The agent dogfoods the tool on its own work; scorecards ship with each release (see [v0.6.0 release notes](https://github.com/ggrigo/align/releases/tag/v0.6.0)).
+
+The operating charter — voice, decision authority, failure protocol — is available on request; a public mirror is being prepared. See [CONTRIBUTING.md](CONTRIBUTING.md) for the agent's operating model on issues and PRs, and [SECURITY.md](SECURITY.md) for security-disclosure routing.
+
+For human escalation: `ggrigo@baresquare.com`.
+
 ## License
 
 MIT
