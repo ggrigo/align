@@ -56,7 +56,7 @@ Add a `retro` subcommand path inside the existing `/align` SKILL.md. The skill b
 **Con:** /retro's instructions are large (it's a different mode of operation — read-the-archive vs. extract-claims-from-output). Stuffing it into /align's SKILL.md bloats the always-loaded context.
 **Con:** Conflates two responsibilities — extracting claims vs. mining the archive — in one skill.
 
-**Recommendation: Option A.** The archive contract is local to /align; cross-plugin invariants are harder to maintain than co-located skills; users want both ends of the loop. The restructure cost is one-time and small. Document the migration path in the v0.6.0 release notes.
+**Recommendation: Option A.** The archive contract is local to /align; cross-plugin invariants are harder to maintain than co-located skills; users want both ends of the loop. The restructure cost is one-time and small. Document the migration path in the release notes when the restructure lands (planned for v0.7.0 — see §What ships first below for the revised order).
 
 The remainder of this design assumes Option A.
 
@@ -263,18 +263,18 @@ Cadence is the user's call. The skill works on any-sized corpus the filter selec
 
 ## What ships first
 
-Implementation order, smallest-to-largest:
+Revised after shipping v0 — see git log for the actual order:
 
-1. **`skills/retro/SKILL.md`** with the v0 skill instructions. The skill reads the manifest, filters, parses, fills the template, writes the pass `.md`. No "apply" stage yet.
-2. **`/retro apply` sub-invocation** added to the same SKILL.md once the synthesis side stabilizes.
-3. **A `references/retro-templates.md`** with the markdown skeleton above factored out as a copy-paste artifact.
-4. **Plugin restructure** — move current `SKILL.md` to `skills/align/SKILL.md`, update `plugin.json` to reflect the multi-skill layout, regression-test on Claude Code and Cowork.
+1. **`commands/retro.md`** ✅ (shipped in PR #8 under the existing flat-layout pattern parallel to `commands/align.md`). Self-contained slash command, no plugin restructure needed. Provides the v0 synthesis side.
+2. **`/retro apply` sub-invocation** — planned v0.6.x or v0.7. Lands the Stage 2 review-gate.
+3. **Plugin restructure** — move current `SKILL.md` to `skills/align/SKILL.md`, port `commands/retro.md` content into `skills/retro/SKILL.md`, update `plugin.json` to reflect the multi-skill layout, regression-test on Claude Code and Cowork. Bundled into **v0.7.0** as the breaking-ish change.
+4. **`references/retro-templates.md`** with the markdown skeleton factored out as a copy-paste artifact — earnable if pattern-mining grows beyond the inline schema in `commands/retro.md`. Not blocking.
 
-Step 4 is the breaking change. Bundled into v0.6.0.
+The original plan called for shipping /retro as `skills/retro/SKILL.md` and bundling the restructure into v0.6.0. In practice the restructure forces a coupled change (single-skill plugins can't mix root `SKILL.md` with a `skills/` subdirectory). Shipping /retro via `commands/retro.md` first let v0 land without the restructure dependency, deferring the breaking change to a focused v0.7.0.
 
 ## Versioning
 
-`/retro` ships as part of /align v0.6.0 (the next minor — the multi-skill restructure is the breaking-ish change). Release notes carry the migration note.
+`/retro` v0 ships as part of /align **v0.6.0** under the flat layout. The multi-skill restructure (described in §Where /retro lives) is planned for **v0.7.0** as the breaking-ish change. v0.7.0 release notes carry the migration note.
 
 ## Open questions
 
