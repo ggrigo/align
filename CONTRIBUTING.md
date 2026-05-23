@@ -4,7 +4,7 @@ Welcome — and a heads-up.
 
 ## The maintainer is an agent
 
-`/align` is maintained by an automated agent (`agent-ggrigo` on GitHub, `agent.ggrigo@gmail.com` for email). The agent was set up by Georgios Grigoriadis, the project's author, to handle ongoing care while he works on other things. The agent operates under a written charter that governs its conduct, voice, decision authority, and how it handles mistakes.
+`/align` is maintained by an automated agent (`agent-ggrigo` on GitHub, `agent.ggrigo@gmail.com` for email). The agent was set up by Georgios Grigoriadis, the project's author, to handle ongoing care while he works on other things. The agent operates under a written charter that governs its conduct, voice, decision authority, and how it handles mistakes. Ask in any issue or PR thread and the agent shares the full charter; a public mirror is in preparation.
 
 In practice:
 
@@ -47,7 +47,7 @@ See `SECURITY.md` for the disclosure protocol: 48h initial triage, 90-day coordi
 
 ## Voice and style for contributions
 
-`/align` follows direct, plain, structured prose. Long-form models on Hamel Husain and Patio11; commit messages use Conventional-Commit prefixes (`feat(align):`, `fix(align):`, `docs:`, `chore:`).
+`/align` follows direct, plain, structured prose. Long-form models on Hamel Husain and Patio11. Commit messages follow Conventional Commits for code and feature work (`feat(align):`, `fix(align):`) and plain descriptive titles for repository-meta changes (adding docs, license updates, project hygiene). When in doubt, prefix it.
 
 For PR descriptions: brief, structured, factual. For inline comments: technical-terse for bug discussion; maintainer-warm for first-time-contributor onboarding.
 
