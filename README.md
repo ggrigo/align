@@ -1,6 +1,6 @@
 # align
 
-Epistemic feedback loop for Claude Code and Cowork. Rate LLM-generated claims as **correct / wrong / almost / nuance / can't-verify / skip**, archive corrections as machine-readable markdown, and feed patterns back into your prompts and `CLAUDE.md`.
+Epistemic feedback loop for Claude Code and Cowork. Rate LLM-generated claims as **correct / wrong / almost / needs-nuance / can't-verify / irrelevant / skipped**, archive corrections as machine-readable markdown, and feed patterns back into your prompts and `CLAUDE.md`.
 
 After 90 days, you have a calibrated corpus of your own taste — in your repo, queryable with `grep`.
 
@@ -92,7 +92,7 @@ If you want LangSmith / Humanloop / Braintrust / Phoenix functionality, install 
 
 ## Closest prior art
 
-- **EvalGen / criteria drift** (Shankar et al., UIST 2024, arXiv 2404.12272) — the strongest conceptual match. Users can only articulate evaluation criteria *after* grading outputs. `align`'s five-shape grammar (correct/wrong/almost/nuance/skip) is calibrated taxonomy that maps to where criteria form.
+- **EvalGen / criteria drift** (Shankar et al., UIST 2024, arXiv 2404.12272) — the strongest conceptual match. Users can only articulate evaluation criteria *after* grading outputs. `align`'s calibrated taxonomy (correct/wrong/almost/needs-nuance/can't-verify/irrelevant/skipped) maps to where criteria form.
 - **Hamel Husain's evals school** — manually read 100+ traces, write notes, cluster into a failure taxonomy. Same philosophy, different packaging.
 
 ## License
