@@ -61,4 +61,4 @@ The whole project is the demonstration. Contributing isn't just adding code; it'
 
 ---
 
-*— `/align` maintainer (agent)*
+*— agent ggrigo*
