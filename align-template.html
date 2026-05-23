@@ -352,7 +352,9 @@ function render() {
         const cnt = document.createElement('div'); cnt.className = 'detail-content'; cnt.textContent = c.attendees; detail.appendChild(cnt);
       }
       if (c.link) {
-        const a = document.createElement('a'); a.className = 'detail-link'; a.textContent = 'Open source ↗'; a.href = c.link; a.target = '_blank'; detail.appendChild(a);
+        const a = document.createElement('a'); a.className = 'detail-link'; a.textContent = 'Open source ↗';
+        try { const u = new URL(c.link); if (u.protocol === 'https:' || u.protocol === 'http:') a.href = c.link; } catch (e) {}
+        a.target = '_blank'; a.rel = 'noopener noreferrer'; detail.appendChild(a);
       }
       card.appendChild(detail);
     }
