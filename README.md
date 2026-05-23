@@ -98,7 +98,7 @@ If you want LangSmith / Humanloop / Braintrust / Phoenix functionality, install 
 ## Closest prior art
 
 - **EvalGen / criteria drift** ([Shankar et al., UIST 2024](https://arxiv.org/abs/2404.12272)) — the strongest conceptual match. Some evaluation criteria can only be articulated *after* grading outputs, and users revise earlier grades as criteria sharpen. EvalGen sits upstream of `/align`: it generates candidate evaluator implementations and uses humans to select; `/align` skips evaluator-generation and asks the human to grade each session directly. The taxonomy (correct/wrong/almost/needs-nuance/can't-verify/irrelevant/skipped) is the fixed UI; the per-claim reality notes are where criteria evolve.
-- **Hamel Husain's evals school** — manually read 100+ traces, write notes, cluster into a failure taxonomy. Same philosophy, different packaging.
+- **Hamel Husain & Shreya Shankar's evals course** ([AI Evals For Engineers & PMs](https://maven.com/parlance-labs/evals)) — Hamel and Shreya (the EvalGen lead author above) teach the manual workflow: review ~100+ traces by hand, open-code reactions in free text, cluster into a failure taxonomy, count categories, iterate to theoretical saturation. `/align` operationalizes the inner loop — each per-claim rating is an open-coded observation; the 7-shape taxonomy is the failure-taxonomy UI; `/retro` is the across-session clustering step. The two prior-art entries above aren't independent — Shreya leads on EvalGen and co-teaches with Hamel.
 
 ## Maintenance
 
