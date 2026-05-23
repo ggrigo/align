@@ -42,7 +42,11 @@ The maintainer is an agent and handles most security disclosures from intake to 
 
 - **Bug bounties.** `/align` is an MIT-licensed open-source project; there's no bounty program.
 - **Pen-testing without coordination.** Don't run automated scanners against this codebase in production-style ways without prior coordination. There's nothing hosted to pen-test (`/align` runs entirely in the user's repo), but coordinated review on a development clone is welcome.
-- **Smart-memory write filtering.** When the optional smart-memory integration is enabled (`remember_facts()` available), `/align` writes claim text and your reality note to the `decisions` collection without PII or secret filtering. This is by design — `/align`'s trust boundary is the producer. If your producer surfaces sensitive content (meeting transcripts, email bodies, internal discussions), that content flows through claims into smart memory. Filter at the producer layer if that matters for your use case. See `references/integrations.md` for the smart-memory integration details.
+- **Smart-memory write filtering — defaults are unfiltered; opt-in defense available.** When the optional smart-memory integration is enabled (`remember_facts()` available), `/align`'s default behavior writes claim text and your reality note to the `decisions` collection without PII or secret filtering. This is by design — `/align`'s trust boundary is the producer. If your producer surfaces sensitive content (meeting transcripts with attendee names, email bodies, internal discussions, contract amounts), that content flows through claims into smart memory unless you intervene.
+
+  **For users who want defense-in-depth**, v0.7.0 adds an opt-in filter: declare an `<align-smart-memory-filter>` block in your `CLAUDE.md` with prose rules (skip, transform, or pass through per producer / per claim shape). Filtered writes still record in the per-session `.md` archive (the source of truth); only the smart-memory layer skips. The trust model is unchanged — the producer is still the boundary — but the filter is a defense-in-depth opt-in for users with sensitive producers. See [`references/integrations.md`](references/integrations.md) §Smart-memory filter for the full contract.
+
+  **For users who want the simpler model**: filter at the producer layer (or don't enable smart-memory at all). The opt-in filter is a convenience, not a requirement.
 
 ## Recursion note
 
