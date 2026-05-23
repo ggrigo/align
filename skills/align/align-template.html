@@ -89,6 +89,10 @@
   /* ── Pattern alerts ── */
   .pattern-alert { background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px; padding: 0.5rem 0.7rem; margin: 0.5rem 0.75rem; font-size: 0.75rem; color: #92400e; }
   .pattern-alert strong { color: #78350f; }
+  .revisit-banner { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 0.5rem 0.7rem; margin: 0.5rem 0.75rem; font-size: 0.75rem; color: #1e40af; display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+  .revisit-banner strong { color: #1e3a8a; }
+  .revisit-banner .dismiss { background: transparent; border: 1px solid #bfdbfe; color: #1e40af; border-radius: 4px; padding: 0.15rem 0.5rem; font-size: 0.7rem; cursor: pointer; margin-left: auto; }
+  .revisit-banner .dismiss:hover { background: #dbeafe; }
 
   /* ── FABs (mobile) ── */
   .fab-row { position: fixed; bottom: 1rem; right: 1rem; display: flex; gap: 0.5rem; z-index: 15; }
@@ -241,6 +245,13 @@ const R_LABELS = { correct: '✅', wrong: '❌', almost: '🟡', nuance: '🔵',
 const R_NAMES = { correct: 'Correct', wrong: 'Wrong', almost: 'Almost', nuance: 'Nuance', unknown: "Can't verify", skip: 'Skip' };
 const R_KEYS = { '1': 'correct', '2': 'wrong', '3': 'almost', '4': 'nuance', '5': 'unknown', '6': 'skip' };
 const ICON_MAP = { calendar: '📅', gmail: '📧', slack: '💬', fireflies: '🎙️', drive: '📁', fabric: '🧵', rhythm: '🥁', commitment: '🤝', briefing: '📋' };
+
+// Revisit-ratings banner: nudge the user to re-grade earlier claims as criteria sharpen.
+// EvalGen's criteria-drift finding (Shankar et al., UIST 2024) — users refine criteria
+// while grading and often want to revisit earlier ratings. Thresholds re-nudge at coarse
+// intervals; dismiss persists per-tier until the next tier fires.
+const REVISIT_THRESHOLDS = [5, 10, 20, 50];
+let revisitDismissedTier = 0;
 
 let focused = 0;
 
@@ -443,7 +454,8 @@ function updateSummary() {
   fillBar(document.getElementById('m-progress'));
   fillBar(document.getElementById('d-progress'));
 
-  // Pattern alerts
+  // Pattern alerts + revisit-ratings banner
+  const activeRevisitTier = REVISIT_THRESHOLDS.slice().reverse().find(t => rated >= t);
   ['m-alerts', 'd-alerts'].forEach(id => {
     const el = document.getElementById(id);
     el.textContent = '';
@@ -453,9 +465,22 @@ function updateSummary() {
       alert.innerHTML = '<strong>Pattern:</strong> ' + counts.wrong + ' wrong claims. Check notes for systematic cause.';
       el.appendChild(alert);
     }
+    if (activeRevisitTier && activeRevisitTier > revisitDismissedTier) {
+      const banner = document.createElement('div');
+      banner.className = 'revisit-banner';
+      banner.innerHTML = '<strong>Revisit:</strong> <span>' + activeRevisitTier + ' rated. Criteria sharpen as you grade — click any prior claim to re-rate.</span>' +
+        '<button class="dismiss" onclick="dismissRevisit(' + activeRevisitTier + ')">Dismiss</button>';
+      el.appendChild(banner);
+    }
   });
 
   // Export controls stay enabled at all times — the Download button is never gated.
+}
+
+// ── Revisit-ratings banner dismiss ──
+function dismissRevisit(tier) {
+  revisitDismissedTier = tier;
+  updateSummary();
 }
 
 // ── Toggle missing sheet (mobile) ──
