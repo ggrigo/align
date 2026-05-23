@@ -71,9 +71,14 @@ No instrumentation contract beyond the array. The producer can live in this plug
 /align rhythm                # use "rhythm" as the context slug
 /align todo                  # use "todo" as the context slug
 /align done                  # process the downloaded .md (Phase 2)
+/retro                       # synthesize the archive (last 7 days, all sources)
+/retro 2026-05               # restrict to a month
+/retro rhythm                # restrict to one source slug
 ```
 
 The skill auto-detects which claim-producing output to read from the current conversation. Pass a context hint as the first argument to override the filename slug.
+
+`/retro` reads the archive and writes one synthesis pass document per run — aggregate metrics, failure-mode clusters, proposed patches with human-review gates. Never modifies the archive. See `references/retro-design.md` for the architecture.
 
 ## Cross-surface design
 
