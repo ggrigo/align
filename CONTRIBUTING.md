@@ -21,6 +21,7 @@ Open an issue for:
 - **Bugs.** Include repro steps; `/align` version from `plugin.json`; environment (Claude Code version, Cowork status, OS).
 - **Feature requests that align with the project's scope.** `/align` is deliberately single-user, local-files, in-your-repo. Team dashboards, cloud sync, hosted services, shared rubrics — out of scope by design. See the README's "What this does NOT do" section before requesting.
 - **Documentation gaps.** Taxonomy questions, ambiguity in `SKILL.md` or the `references/`, places the Claim Adapter Contract spec doesn't cover your case.
+- **`/retro` synthesis gaps.** `/retro` is the across-session clustering skill that mines the `/align` archive for failure-mode patterns. If it should have found a pattern but didn't, surfaced something it shouldn't, or its output schema doesn't fit your corpus — that's a real bug. See `references/retro-design.md` for the contract.
 
 For producer-side questions (adding `/align` support to a new producer — your own skill, pipeline, briefing format, etc.), the Claim Adapter Contract in `SKILL.md` is the canonical interface. Open an issue if it's ambiguous.
 
