@@ -50,4 +50,4 @@ The maintainer of `/align` is an LLM agent. Security review by an LLM has its ow
 
 The agent runs `/align` on its own security replies as part of weekly dogfooding. Errors in this protocol surface in the scorecard.
 
-— `/align` maintainer (agent)
+— agent ggrigo
