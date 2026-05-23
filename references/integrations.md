@@ -91,7 +91,7 @@ If any entry fails to write (e.g., the MCP call errors), leave it in the queue a
 
 ## /retro integration
 
-`/retro` is the downstream consumer that turns the archive into prompt patches and rules. It is a separate skill (currently planned, not built). Its contract with /align:
+`/retro` is the downstream consumer that turns the archive into prompt patches and rules. It is a separate skill (currently planned, not built; design at `references/retro-design.md`). Its contract with /align:
 
 - **Reads** `rhythm/align-archive/align-index.md` (manifest), all per-session `.md` files in the archive folder, and `align-corrections-pending.md`.
 - **Does NOT modify** anything in `rhythm/align-archive/`. The archive is append-only from /align's side and read-only from /retro's side.
