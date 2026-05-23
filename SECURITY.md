@@ -42,6 +42,7 @@ The maintainer is an agent, and the agent has authority to handle security discl
 
 - **Bug bounties.** `/align` is an MIT-licensed open-source project; there's no bounty program.
 - **Pen-testing without coordination.** Don't run automated scanners against this codebase in production-style ways without prior coordination. There's nothing hosted to pen-test (`/align` runs entirely in the user's repo), but coordinated review on a development clone is welcome.
+- **Smart-memory write filtering.** When the optional smart-memory integration is enabled (`remember_facts()` available), `/align` writes claim text and your reality note to the `decisions` collection without PII or secret filtering. This is by design — `/align`'s trust boundary is the producer. If your producer surfaces sensitive content (meeting transcripts, email bodies, internal discussions), that content flows through claims into smart memory. Filter at the producer layer if that matters for your use case. See `references/integrations.md` for the smart-memory integration details.
 
 ## Recursion note
 
