@@ -89,6 +89,15 @@ A cluster qualifies if:
 
 For each qualifying cluster, name it with a one-line label, list its instances, and write a one-paragraph root-cause read. Severity tag is the strongest rating among the cluster's instances (❌ > 🔶 > 🔷).
 
+#### Meta-clusters (corpus-level patterns)
+
+Some clusters aren't found by grouping instances on noun + feature — they're found by aggregate rates across the corpus. Examples:
+
+- **Self-rater bias.** Own-work passes (producer == rater) systematically under-flag errors relative to external-rated passes. Evidence: aggregate ❌ rate diverges between own-work and external subsets.
+- **Aspirational claims.** A 🤷 (can't-verify) rate above ~15% signals practices committed-but-untested. Evidence: corpus-level 🤷 rate.
+
+Meta-clusters qualify on **aggregate evidence**, not on the ≥2/≥2 instance rule. Shape them like instance clusters — label, root-cause paragraph — but the "Where surfaced" table reports rates and subset comparisons rather than per-instance citations. Most meta-cluster patches are Informational (no diff); see Step 5.
+
 ### Step 4 — Cluster missing items (pipeline blind spots)
 
 Same grouping as Step 3 but on `## Missing — Not Captured` entries:
@@ -112,6 +121,8 @@ For each qualifying cluster (failure-mode or blind-spot), propose one concrete p
 Each patch has a Review status of `⬜ pending`. The user accepts/rejects/revises in the pass document directly (Stage 1 of the review gate — see `references/retro-design.md` §Review-gate mechanics).
 
 Do not propose more than one patch per cluster. If multiple patches would all help, pick the one most likely to land.
+
+**Resolved instances (optional).** When a cluster's instances are largely already addressed in earlier PRs or ticks, list them under a `**Resolved instances:**` line in the cluster (with PR # or commit SHA), and propose a patch only for the remaining unresolved instance(s). This preserves the historical signal — "this cluster mattered enough to be patched 6 times" — without inflating the patch list with closed work.
 
 ### Step 6 — Write the pass document
 
@@ -140,7 +151,8 @@ Sources read: <list of session filenames>
 | ... |
 | **Total** | | ... |
 
-Accuracy roll-up (✅ / total): N%.
+Accuracy roll-up (✅ / rated): N%.            <!-- rated = total − ⬜ -->
+Raw accuracy (✅ / total): N%.                 <!-- emit only when ⬜ > 0 -->
 Calibration roll-up ((✅+❌+🔶+🔷+➖+⬜) / total): N%.
 Aspirational rate (🤷 / total): N%.
 
@@ -207,6 +219,12 @@ Diff:
 - **Re-pass recommendation:** <yes/no, with reasoning>
 
 If >50% of sessions came from a single producer or rater, prepend a top-of-doc warning to the synthesis.
+
+---
+
+## Recursion note
+
+This pass is itself an LLM output. The synthesis claims clusters and proposes patches; both are graded by the next /align session that runs against this file. Self-rater bias (per §Anti-pattern self-check) applies when the same agent produces and grades.
 ```
 
 ### Step 7 — Report back to the user
