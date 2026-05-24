@@ -2,11 +2,11 @@
 
 Epistemic feedback loop for Claude Code and Cowork. Rate LLM-generated claims as **correct / wrong / almost / needs-nuance / can't-verify / irrelevant / skipped**, archive corrections as machine-readable markdown, and feed patterns back into your prompts and `CLAUDE.md`.
 
-After 90 days, you have a calibrated corpus of your own taste — in your repo, queryable with `grep`.
-
 ## Why
 
-LLM outputs contain claims. Some are right, some are wrong, some need nuance. Most people read the output, mutter "that's wrong," and move on. The correction never lands anywhere durable. `align` turns that into a structured artifact:
+You read three Claude outputs today. Two of them were partially wrong — claim 4 confused two people; claim 12 cited a stale deadline. You said *"that's not quite right"* in your head and moved on. **The signal evaporated.** Next week, the same producer makes the same kind of mistake — because nothing in the loop learned from your reaction.
+
+`align` turns the muttering into a structured artifact:
 
 1. A skill (`/rhythm`, `/digest`, anything that produces claims) emits its output.
 2. `/align` extracts the claims into an interactive HTML form.
@@ -14,6 +14,8 @@ LLM outputs contain claims. Some are right, some are wrong, some need nuance. Mo
 4. The download is a structured `.md` file — corrections, confirmations, missing items.
 5. Phase 2 reads the file, applies updates (TASKS.md, smart-memory when available), and archives the datapoint.
 6. Patterns mined from the archive feed back into the originating skill's prompts and your `CLAUDE.md`.
+
+After 90 days, you have a calibrated corpus of your own taste — in your repo, queryable with `grep`.
 
 ## Install
 
