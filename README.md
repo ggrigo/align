@@ -4,11 +4,17 @@ Personal evals for Claude Code and Cowork. Capture the corrections you'd otherwi
 
 ## Why
 
-You read three Claude outputs today. Two of them were partially wrong — claim 4 confused two people; claim 12 cited a stale deadline. You said *"that's not quite right"* in your head and moved on. **The signal evaporated.** Next week, the same producer makes the same kind of mistake — because nothing in the loop learned from your reaction.
+When a model pulls a lot of context together and compresses it into one answer, everything arrives in the same confident voice. A checked fact, a reasonable claim, and a quiet assumption all read identically. The larger the synthesis, the worse this gets, and the more it smooths away nuance that mattered without showing you where.
 
-`align` turns the muttering into a structured artifact:
+`align` is a checkpoint for that moment. It takes the output apart into its separate statements and lets you mark each one quickly: right, wrong, almost, needs nuance, can't verify. What you correct is kept and fed back, so the next pass starts closer to the truth instead of repeating the same flattening.
 
-1. A skill (`/rhythm`, `/digest`, anything that produces claims) emits its output.
+The point is narrow: a structured place to get aligned with the model on facts, claims, and assumptions before you act on what it gave you. It works on any large synthesis, whatever produced it.
+
+It exists only because nothing native does this. If Anthropic provided it as part of the product, we'd retire the project the same day.
+
+## How
+
+1. A producer (any skill that emits claims — `/rhythm`, `/digest`, an ad-hoc Claude turn) emits its output.
 2. `/align` extracts the claims into an interactive HTML form.
 3. You rate each claim in 2 minutes. Notes go on the wrong/almost/nuance ones.
 4. The download is a structured `.md` file — corrections, confirmations, missing items.
