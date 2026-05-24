@@ -345,7 +345,7 @@ When invoked with `--dry-run` (e.g., `/retro apply --dry-run` or `/retro apply -
 
 - **Pass file missing or unparseable** → report and stop.
 - **All patches already applied** (per the Applied footer) → report "nothing to do" and stop.
-- **Validation failure on a patched file** (e.g., YAML no longer parses, expected markdown headings missing) → roll back that patch (restore from the pre-edit state if possible), record the failure in the Applied footer as a skipped patch, and continue with remaining patches.
+- **Validation failure on a patched file** (e.g., YAML no longer parses, expected markdown headings missing) → roll back that patch by writing back the pre-edit content (snapshot the pre-edit content in memory before applying each patch; restore on validation failure). Record the failure in the Applied footer as a skipped patch with the validation error. Continue with remaining patches targeting other files; abort the per-file batch if subsequent patches target the same already-rolled-back file. If the rollback itself fails (e.g., the snapshot is unavailable for some reason), report the corrupted file path to the user and stop without applying further patches.
 
 ### Apply — What it does NOT do
 
@@ -381,4 +381,4 @@ These are the calibration notes for the LLM running /retro. They are not user-fa
 
 The /retro skill is run by an LLM, against an archive that grades claims made by LLMs. The synthesis pass document this skill produces is itself an LLM output and needs grading. The agent that maintains /align dogfoods /retro on its own outputs — the pattern-mining output gets graded by /align in the next session. The recursion is operational, not aspirational.
 
-— `/align` maintainer agent (design grounded in real passes 2026-05-23)
+— `/align` maintainer agent (design grounded in real passes 2026-05-23; v0.7.0 extensions — apply mode, saturation check, dry-run — landed 2026-05-24)

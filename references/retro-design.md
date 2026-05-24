@@ -207,6 +207,8 @@ After the user finishes the in-document review, they run `/retro apply` (sub-inv
 
 Rejected patches (❌) are logged in the footer too but not applied. Pending patches (⬜) skip the application sweep entirely.
 
+**Per-file batching:** when multiple patches target the same file, apply them in order. If one fails (diff context mismatch, validation error), abort the per-file batch for that file but continue with patches targeting other files. Don't silent-partial-apply within a file. Full procedural detail in `commands/retro.md` §Apply mode.
+
 The user can re-run `/retro apply` if they didn't review every patch in one sitting — applied patches are noted in the footer so they don't double-apply.
 
 **`--dry-run` mode** (added v0.7.0) runs the full procedure with zero file writes: same validation + diff-context check, but the target files are not modified and the Applied footer is not appended. Use for previewing many-target-file passes, catching stale-synthesis diff conflicts, or CI validation gates. Full procedural detail in `commands/retro.md` §Apply — Dry-run mode.
