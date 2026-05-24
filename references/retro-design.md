@@ -1,8 +1,10 @@
 # /retro — design
 
-This document specifies `/retro`, the downstream consumer of the /align archive. `/retro` is named in the README §Why bullet 6 ("Patterns mined from the archive feed back into the originating skill's prompts and your `CLAUDE.md`") and in `references/integrations.md` §/retro as a separate skill whose v0 contract is sketched. This document extends the contract with the architecture, output format, and review-gate mechanics needed to build it.
+This document specifies `/retro`, the downstream consumer of the /align archive. `/retro` is named in the README §Why bullet 6 ("Patterns mined from the archive feed back into the originating skill's prompts and your `CLAUDE.md`") and in `references/integrations.md` §/retro as a separate skill. This document extends the contract with the architecture, output format, and review-gate mechanics.
 
-Status: design draft. The skill is not yet implemented. The agent that maintains /align has been running `/retro`-style synthesis passes by hand on its own dogfooding archive since 2026-05-23, so the output shape below is grounded in two real example passes, not invented.
+Status: shipped in v0.6.0 (synthesis side: PRs #7 + #8) and extended in v0.7.0 (PRs #11 spec refinements, #31 `/retro apply` mode, #34 saturation check, #35 `--dry-run`). The skill's full procedural spec lives in `commands/retro.md`; this design doc captures the architectural rationale. The original framing — "grounded in two real example passes from the maintainer's dogfooding archive (2026-05-23)" — is preserved as historical context; the implementation now serves real `/retro` runs against any archive.
+
+> **Note on `rhythm/` prefix.** Archive paths in this doc default to `rhythm/align-archive/` for historical reasons (/rhythm was /align's first producer). When running /retro against a different working folder's archive, substitute the prefix accordingly. See `references/archive-format.md` §File locations for the full convention.
 
 ## Goal
 
