@@ -1,6 +1,6 @@
 # align
 
-Epistemic feedback loop for Claude Code and Cowork. Rate LLM-generated claims as **correct / wrong / almost / needs-nuance / can't-verify / irrelevant / skipped**, archive corrections as machine-readable markdown, and feed patterns back into your prompts and `CLAUDE.md`.
+Personal evals for Claude Code and Cowork. Capture the corrections you'd otherwise mutter and forget — rate LLM claims as **correct / wrong / almost / needs-nuance / can't-verify / irrelevant / skipped** in a local HTML form, archive as machine-readable markdown, and feed patterns back into your prompts and `CLAUDE.md`.
 
 ## Why
 
