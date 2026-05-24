@@ -149,13 +149,13 @@ This gives the user a per-session view of what the filter did, without leaking t
 
 ## /retro integration
 
-`/retro` is the downstream consumer that turns the archive into prompt patches and rules. It is a separate skill (currently planned, not built; design at `references/retro-design.md`). Its contract with /align:
+`/retro` is the downstream consumer that turns the archive into prompt patches and rules. Synthesis side at `commands/retro.md`; design at `references/retro-design.md`. Both modes ship as of v0.7.0: **synthesis** (the default `/retro` invocation, which writes a pass document) and **apply** (`/retro apply` or `/retro apply --dry-run`, which lands accepted patches in target files). Its contract with /align:
 
 - **Reads** `rhythm/align-archive/align-index.md` (manifest), all per-session `.md` files in the archive folder, and `align-corrections-pending.md`.
 - **Does NOT modify** anything in `rhythm/align-archive/`. The archive is append-only from /align's side and read-only from /retro's side.
-- **Writes** proposed CLAUDE.md additions and skill SKILL.md patches into a separate location (probably `rhythm/retro-output/` or directly into source skills with a marker), with human review gates before they land.
+- **Writes** synthesis pass documents to `<archive>/retro-output/YYYY-MM-DD-pass-N.md` per `references/retro-design.md` §Output format. `/retro apply` (Stage 2) then reads marked-up pass documents and writes accepted patches directly to target files; an Applied footer is appended to the pass document for dedup on re-runs.
 
-The expected cadence is weekly: /retro reads ~5-10 new sessions worth of corrections, surfaces failure-mode clusters, proposes one or two rule changes per run.
+**Cadence:** `/retro` is typically run every 2-4 weeks on accumulated traces, or whenever the archive has grown by ~100 entries since the last pass (matches the cadence guidance in `README.md` §Usage). Per-run it reads N sessions worth of corrections, surfaces failure-mode clusters, and proposes patches. A `Saturation status: <saturated | active | insufficient data>` line in the pass metadata signals whether recent sessions are still surfacing new cluster types — `saturated` corpora may produce zero new patches per run, which is the right signal to stop synthesizing and focus on fixing existing surfaced patterns.
 
 ## Other producers (non-rhythm)
 
