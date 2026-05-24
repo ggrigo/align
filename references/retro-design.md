@@ -63,14 +63,21 @@ The remainder of this design assumes Option A.
 ## Invocation interface
 
 ```
-/retro                              # default: last 7 days, all sources
-/retro 2026-05                      # restrict to a month
-/retro 2026-05-15..2026-05-22       # restrict to a date range
-/retro rhythm                        # restrict to one source slug
-/retro rhythm 2026-05                # both filters
+/retro                              # synthesis: last 7 days, all sources
+/retro 2026-05                      # synthesis: restrict to a month
+/retro 2026-05-15..2026-05-22       # synthesis: restrict to a date range
+/retro rhythm                        # synthesis: restrict to one source slug
+/retro rhythm 2026-05                # synthesis: both filters
+/retro apply                        # apply mode: apply the most recent pass
+/retro apply <pass-file>            # apply mode: apply a specific pass file
+/retro apply --dry-run              # apply mode: preview only, no file writes
+/retro apply --dry-run <pass-file>  # apply mode: preview a specific pass file
 ```
 
-The skill reads the manifest, filters rows by date and (optional) source-slug, opens each filtered session's `.md`, and synthesizes.
+The skill has two modes:
+
+- **Synthesis** (default; no `apply` arg) — reads the manifest, filters rows by date and (optional) source-slug, opens each filtered session's `.md`, and synthesizes a pass document. See §Output format below.
+- **Apply** (`apply` arg) — reads a marked-up pass document, applies the accepted patches to target files, records what landed. Full procedure in `commands/retro.md` §Apply mode. `--dry-run` previews without writing — same procedure as actual apply but read-only on all surfaces.
 
 Output lands at `rhythm/align-archive/retro-output/YYYY-MM-DD-pass-N.md` where:
 - `YYYY-MM-DD` is the run date.
@@ -97,9 +104,12 @@ Sources read: <list of session filenames>
 | ...
 | **Total** | | ... |
 
-Accuracy roll-up (✅ / total): N%.
+Accuracy roll-up (✅ / rated): N%.            <!-- rated = total − ⬜ -->
+Raw accuracy (✅ / total): N%.                 <!-- emit only when ⬜ > 0 -->
 Calibration roll-up ((✅+❌+🔶+🔷+➖+⬜) / total): N%.
 Aspirational rate (🤷 / total): N%.
+
+Saturation status: <saturated | active | insufficient data> (window K = N).
 
 ---
 
@@ -198,6 +208,8 @@ After the user finishes the in-document review, they run `/retro apply` (sub-inv
 Rejected patches (❌) are logged in the footer too but not applied. Pending patches (⬜) skip the application sweep entirely.
 
 The user can re-run `/retro apply` if they didn't review every patch in one sitting — applied patches are noted in the footer so they don't double-apply.
+
+**`--dry-run` mode** (added v0.7.0) runs the full procedure with zero file writes: same validation + diff-context check, but the target files are not modified and the Applied footer is not appended. Use for previewing many-target-file passes, catching stale-synthesis diff conflicts, or CI validation gates. Full procedural detail in `commands/retro.md` §Apply — Dry-run mode.
 
 ## Pattern-mining heuristic (v0)
 
