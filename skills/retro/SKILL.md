@@ -6,27 +6,33 @@ description: Synthesize the /align archive into a pass document — aggregate me
 
 `/retro` is the downstream consumer of `/align`'s archive. It reads the manifest, opens each session's `.md`, and writes one synthesis pass document per run. It proposes patches; it does not apply them.
 
-This command is the v0 synthesis side. The `/retro apply` sub-invocation (which carries patch acceptance forward to the actual target files) is a planned v0.2 extension; out of scope for this file.
+This skill covers both modes of the synthesis loop:
 
-See `references/retro-design.md` for the architectural rationale, placement options, and review-gate mechanics. See `references/archive-format.md` for the manifest and per-session `.md` schemas /retro reads from.
+- **Default invocation** (no `apply` arg) — synthesis side. Reads the archive, writes a pass document with proposed patches.
+- **`/retro apply`** — Stage 2 of the review-gate. Reads a marked-up pass document, applies accepted patches to target files, records what landed. See §Apply mode below.
+
+See `references/retro-design.md` for the architectural rationale and review-gate mechanics. See `references/archive-format.md` for the manifest and per-session `.md` schemas /retro reads from.
 
 ## Arguments
 
 ```
-/retro                              # default: last 7 days, all sources
-/retro 2026-05                      # one month
-/retro 2026-05-15..2026-05-22       # explicit date range
-/retro rhythm                        # filter by source slug
-/retro rhythm 2026-05                # both filters
+/retro                              # synthesis: last 7 days, all sources
+/retro 2026-05                      # synthesis: one month
+/retro 2026-05-15..2026-05-22       # synthesis: explicit date range
+/retro rhythm                        # synthesis: filter by source slug
+/retro rhythm 2026-05                # synthesis: both filters
+/retro apply                        # apply mode: apply the most recent pass
+/retro apply <pass-file>            # apply mode: apply a specific pass file
 ```
 
 Resolve the args:
 
+- If the first arg is literal `apply` → switch to apply mode (see §Apply mode). Second arg, if present, is the pass file path; otherwise pick the most recent file in `<archive>/retro-output/`.
 - If the arg matches `YYYY-MM` → month filter, last day inclusive.
 - If the arg matches `YYYY-MM-DD..YYYY-MM-DD` → explicit range, both inclusive.
 - If the arg is a single kebab-case token not matching either date shape → source-slug filter.
-- If two args are provided → first is slug, second is date filter.
-- If no args → default to last 7 days, all sources.
+- If two args are provided (synthesis mode) → first is slug, second is date filter.
+- If no args → default synthesis: last 7 days, all sources.
 
 ## Inputs
 
@@ -235,7 +241,7 @@ After writing the pass file, give the user:
 2. The Aggregate metrics row totals (one line summary).
 3. The count of clusters surfaced (failure-mode + blind-spot).
 4. The count of proposed patches.
-5. Next step: "Open the pass file, mark each patch ✅/❌/🔶 in the Review status line, then run `/retro apply` to land the accepted ones." (Note: `/retro apply` is planned v0.2; for v0 the user manually applies patches by reading the diff.)
+5. Next step: "Open the pass file, mark each patch ✅/❌/🔶 in the Review status line, then run `/retro apply` to land the accepted ones."
 
 ## Stop conditions
 
@@ -243,12 +249,67 @@ After writing the pass file, give the user:
 - **All sessions malformed:** report and stop. Don't write a pass that has no data behind it.
 - **Sum-invariant violations across most rows:** report, log the violations, but still write the pass — the user needs to see what's broken.
 
+## Apply mode
+
+When invoked as `/retro apply <pass-file>` (or `/retro apply` to pick the most recent pass file in `<archive>/retro-output/`), /retro runs Stage 2 of the review-gate per `references/retro-design.md` §Stage 2. This is the patch-applying side of the synthesis loop.
+
+### Apply — Inputs
+
+Read the named pass file. Parse:
+
+- Each `### Patch N` section
+- Its **Review status** line (`⬜ pending` / `✅ accept` / `❌ reject` / `🔶 revise`)
+- Its **Target** file path (declared in the patch's metadata)
+- Its diff content (the original block for `✅`; the user's rewritten text for `🔶` — the user is expected to have edited the patch body inline)
+- The **Applied** footer if it exists (deduplication signal — see Step 4 below)
+
+### Apply — Process
+
+1. **Validate the pass file.** Every `### Patch N` should have a Review status line and a Target. If malformed, report which patch is broken and stop without applying anything.
+2. **Check the Applied footer**, if present. Skip any patch already listed there (dedup; re-runs of `/retro apply` don't double-apply).
+3. **For each `✅ accept` or `🔶 revise` patch, in order:**
+   - Read the target file.
+   - Apply the diff. The diff is the **original block** for `✅`; the **user-rewritten block** for `🔶`.
+   - If the diff context doesn't match the current target file (the file changed since synthesis), abort that patch with a clear message naming the patch number and the conflict reason. Don't silent-partial-apply. Continue with remaining patches if their target is a different file; abort the per-file batch if same file.
+   - Validate the patched file by parsing it back: markdown headings still match expected structure; YAML still parses; etc., as applicable to the target type.
+4. **Append an Applied footer** to the pass file recording what landed:
+
+   ```markdown
+   ## Applied (YYYY-MM-DD HH:MM)
+   - Patch 1 → CHARTER.md §Decision authority — applied
+   - Patch 2 → SKILL.md §Phase 2 — applied (revised version used)
+   - Patch 3 → producer-skill.md — skipped: diff context mismatch (file changed since synthesis); re-synth needed
+   - Patch 4 → CLAUDE.md §rules — skipped: rejected
+   ```
+
+   Footer entries record `applied`, `applied (revised version used)`, `skipped: <reason>`, or `skipped: rejected`. The footer is the dedup signal for subsequent `/retro apply` runs.
+
+5. **Report to the user.** Three counts: how many patches were applied (✅ and 🔶 combined), how many were skipped with a reason, how many were left untouched (`⬜ pending` — user hasn't decided yet). Cite the absolute path of the pass file so the user can re-open it.
+
+### Apply — Stop conditions
+
+- **Pass file missing or unparseable** → report and stop.
+- **All patches already applied** (per the Applied footer) → report "nothing to do" and stop.
+- **Validation failure on a patched file** (e.g., YAML no longer parses, expected markdown headings missing) → roll back that patch (restore from the pre-edit state if possible), record the failure in the Applied footer as a skipped patch, and continue with remaining patches.
+
+### Apply — What it does NOT do
+
+- Open PRs, commit, push, or otherwise touch git. Target-file edits live in the working directory; the user (or their agent) wraps them in commits / PRs through their own workflow.
+- Modify the original patch body in the pass file. Only the Applied footer is appended; the patch sections themselves stay as the user marked them.
+- Cluster across multiple pass documents. One pass file per invocation.
+- Apply patches whose target file no longer exists or has moved (record as a skipped patch in the footer with reason).
+
+### Apply — Recursion
+
+The patched target files and the appended Applied footer are LLM outputs. They're gradable by /align; future /align passes that include these outputs feed back into /retro's spec.
+
 ## What /retro does NOT do
 
-- **Modify the archive.** Never edit `align-index.md`, never edit per-session `.md` files. Read-only on the archive folder.
-- **Apply patches automatically.** Stage 2 (`/retro apply`) is the only mechanism for landing patches; v0 doesn't include it. Users who want to apply v0-era proposals do it themselves by reading the diff and editing the target file.
+- **Modify the archive.** Never edit `align-index.md`, never edit per-session `.md` files. Read-only on the archive folder. (Synthesis and apply modes both honor this.)
+- **Apply patches automatically.** `/retro apply` only lands patches the user has explicitly marked `✅ accept` or `🔶 revise`. `⬜ pending` and `❌ reject` markings are honored as-is; nothing is applied without the user's marking.
 - **Cluster across multiple users' archives.** /align is single-user by design. /retro reads one archive per run.
 - **Read the `.html` files.** Per the archive contract, the `.md` carries the structured signal; the `.html` is for human re-inspection only.
+- **Open PRs or commit to git.** Apply mode edits target files in the working directory; git wrapping is the user's call (or the user's agent's call, per their workflow).
 
 ## Failure modes to surface
 
