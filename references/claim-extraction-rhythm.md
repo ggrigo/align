@@ -106,7 +106,7 @@ The form is saved to the **active working folder** — where the work lives, not
 | Team / headcount file | `baresquare/finance/` |
 | General / unknown | Ask the user once: "Saving to `rhythm/` — correct?" |
 
-The archive copy of the .html and .md always goes to `rhythm/align-archive/` regardless of the active folder (see `references/archive-format.md`).
+The archive copy of the .html and .md goes to `rhythm/align-archive/` for rhythm-shaped sources (this file is the rhythm producer guide; for other producers, see `references/archive-format.md` §File locations for the substitution convention).
 
 ## What this file does NOT cover
 

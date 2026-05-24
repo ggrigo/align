@@ -148,6 +148,8 @@ Everything below this section is /align's responsibility, not the producer's.
 
 ### Phase 2: Apply the feedback and archive
 
+> **Note on `rhythm/` prefix.** Archive paths in this skill default to `rhythm/align-archive/` for historical reasons (/rhythm was /align's first producer). When running /align in a non-rhythm working folder, substitute the prefix accordingly (e.g., `clients/adidas/align-archive/`, `clients/adidas/align-index.md`). See `references/archive-format.md` §File locations for the full convention.
+
 Triggered when the user says "done", "apply", "process feedback", etc.
 
 #### Step 1 — Find the align.md
