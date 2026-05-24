@@ -10,6 +10,8 @@ Datapoints are immutable once archived. If a correction was wrong, the next sess
 
 ## File locations
 
+> **Note on `rhythm/` prefix.** Paths in this doc default to `rhythm/align-archive/` because /align's first producer was /rhythm. When running /align in a different working folder (e.g., `clients/adidas/`), the archive can live under that folder instead — `clients/adidas/align-archive/`, `clients/adidas/align-index.md`, etc. Substitute the prefix accordingly.
+
 | What | Where | Purpose |
 |------|-------|---------|
 | Active `.html` | The active working folder (e.g., `rhythm/`, `clients/adidas/...`) | Local context; the file the user opens to rate claims |
@@ -19,7 +21,7 @@ Datapoints are immutable once archived. If a correction was wrong, the next sess
 | Pending corrections queue | `rhythm/align-archive/align-corrections-pending.md` | Smart-memory writes that couldn't land because the tool wasn't wired. Drained by the next session that has the tool. See `references/integrations.md` |
 | Browser dropbox | `incoming-docs/` (Cowork) or `~/Downloads/` (Claude Code) | Where the user's downloaded `.md` lands before /align picks it up |
 
-The archive folder is `rhythm/align-archive/` regardless of which active working folder produced the session. Create it on first use if it doesn't exist.
+The archive folder defaults to `rhythm/align-archive/` (with the same substitution caveat above for non-rhythm working folders). Create it on first use if it doesn't exist.
 
 ## Naming conventions
 
@@ -108,4 +110,4 @@ No subfolders. Flat layout; the manifest is the index.
 3. Each `.md`'s `## Missing — Not Captured` section (for pipeline-blind-spot mining).
 4. The pending-corrections queue (for "would have written but couldn't" patterns).
 
-It does NOT need to read the `.html` files — those are for human re-inspection only. Per Anthropic's `assets/` convention, the `.html` is consumed in output; the `.md` is what carries the structured signal.
+It does NOT need to read the `.html` files — those are for human re-inspection only. The convention this plugin follows: the `.html` is consumed in the form-rendering pass; the `.md` is what carries the structured signal downstream.
