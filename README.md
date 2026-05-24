@@ -42,19 +42,31 @@ A `align/` directory with `.claude-plugin/plugin.json` at root works identically
 ```
 align/
 ├── .claude-plugin/
-│   └── plugin.json                          # manifest (v0.5.0)
+│   └── plugin.json                          # manifest (v0.7.0)
 ├── commands/
-│   └── align.md                             # /align slash command (thin entrypoint)
+│   ├── align.md                             # legacy /align entrypoint (thin)
+│   └── retro.md                             # legacy /retro entrypoint
+├── skills/
+│   ├── align/
+│   │   ├── SKILL.md                         # canonical /align skill (Phase 1/2 flow)
+│   │   └── align-template.html              # interactive feedback form
+│   └── retro/
+│       └── SKILL.md                         # canonical /retro skill (synthesis + apply)
 ├── references/
 │   ├── claim-extraction-rhythm.md           # rhythm-specific producer heuristics
 │   ├── archive-format.md                    # manifest schema, file layout, invariants
-│   └── integrations.md                      # TASKS.md, smart-memory queue, /retro
-├── SKILL.md                                 # public Claim Adapter Contract + Phase 1/2 flow
-├── align-template.html                      # interactive feedback form (self-contained HTML asset)
-└── README.md                                # you are here
+│   ├── integrations.md                      # TASKS.md, smart-memory queue, /retro
+│   ├── retro-design.md                      # /retro design + review-gate mechanics
+│   └── v0.7.0-design.md                     # most recent release design
+├── SKILL.md                                 # legacy /align root location (additive-phase compat)
+├── align-template.html                      # legacy template (additive-phase compat)
+├── README.md                                # you are here
+├── CONTRIBUTING.md                          # contributor guide; maintainer disclosure
+├── SECURITY.md                              # disclosure protocol; smart-memory caveat
+└── LICENSE                                  # MIT
 ```
 
-Single-skill plugin: `SKILL.md` at root, no `skills/` folder, auto-loaded by Claude Code v2.1.142+. The `references/` files are loaded on demand by Claude when SKILL.md cites them — they're not in the always-loaded context.
+Multi-skill plugin in the **additive migration phase** as of v0.7.0: the canonical paths going forward are `skills/align/SKILL.md` and `skills/retro/SKILL.md`; the legacy `commands/` files and root `SKILL.md` stay active for backwards compatibility. Skill invocation is namespaced — `/align:align` and `/align:retro` (the un-namespaced `/align` and `/retro` continue to work via the legacy paths). The `references/` files are loaded on demand by Claude when a skill cites them — they're not in the always-loaded context.
 
 ## Extending — using /align with a new producer
 
@@ -76,11 +88,14 @@ No instrumentation contract beyond the array. The producer can live in this plug
 /retro                       # synthesize the archive (last 7 days, all sources)
 /retro 2026-05               # restrict to a month
 /retro rhythm                # restrict to one source slug
+/retro apply                 # Stage 2 — open PRs from the most recent pass's proposed patches
+/retro apply <pass-file>     # apply patches from a specific pass
+/retro apply --dry-run       # show what /retro apply would do without writing
 ```
 
 The skill auto-detects which claim-producing output to read from the current conversation. Pass a context hint as the first argument to override the filename slug.
 
-`/retro` reads the archive and writes one synthesis pass document per run — aggregate metrics, failure-mode clusters, proposed patches with human-review gates. Never modifies the archive. See `references/retro-design.md` for the architecture.
+`/retro` reads the archive and writes one synthesis pass document per run — aggregate metrics, failure-mode clusters, proposed patches with human-review gates. Never modifies the archive. `/retro apply` is the Stage-2 gate: the human approves which proposed patches become real PRs. See `references/retro-design.md` for the architecture.
 
 **How often to run.** Run `/align` whenever you make a significant change to a producer (a new prompt, a new claim shape, a new system context). Run `/retro` every 2–4 weeks on accumulated traces, or whenever the archive has grown by ~100 entries since the last pass. Per [Hamel Husain & Shreya Shankar's evals workflow](https://maven.com/parlance-labs/evals), the operational saturation heuristic is "if ~20 new traces don't surface a new failure category, the corpus is saturated." For small projects, scale the numbers down — even 20–50 outputs per significant change gives signal.
 
