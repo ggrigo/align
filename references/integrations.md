@@ -2,6 +2,8 @@
 
 This reference covers how /align interacts with the systems around it. Each integration is opt-in from the skill's perspective: if a target system isn't present, /align degrades gracefully rather than failing.
 
+> **Note on `rhythm/` prefix.** Archive paths in this doc default to `rhythm/align-archive/` for historical reasons (/rhythm was /align's first producer). When running /align in a different working folder, substitute the prefix accordingly. See `references/archive-format.md` §File locations for the full convention.
+
 ## Integration map
 
 | Counterpart | Direction | What happens |
