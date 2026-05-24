@@ -23,11 +23,13 @@ See `references/retro-design.md` for the architectural rationale and review-gate
 /retro rhythm 2026-05                # synthesis: both filters
 /retro apply                        # apply mode: apply the most recent pass
 /retro apply <pass-file>            # apply mode: apply a specific pass file
+/retro apply --dry-run              # apply mode: preview only, no file writes
+/retro apply --dry-run <pass-file>  # apply mode: preview a specific pass file
 ```
 
 Resolve the args:
 
-- If the first arg is literal `apply` → switch to apply mode (see §Apply mode). Second arg, if present, is the pass file path; otherwise pick the most recent file in `<archive>/retro-output/`.
+- If the first arg is literal `apply` → switch to apply mode (see §Apply mode). Remaining args, in any order: `--dry-run` flag (optional); pass file path (optional; defaults to most recent file in `<archive>/retro-output/`).
 - If the arg matches `YYYY-MM` → month filter, last day inclusive.
 - If the arg matches `YYYY-MM-DD..YYYY-MM-DD` → explicit range, both inclusive.
 - If the arg is a single kebab-case token not matching either date shape → source-slug filter.
@@ -312,6 +314,33 @@ Read the named pass file. Parse:
 
 5. **Report to the user.** Three counts: how many patches were applied (✅ and 🔶 combined), how many were skipped with a reason, how many were left untouched (`⬜ pending` — user hasn't decided yet). Cite the absolute path of the pass file so the user can re-open it.
 
+### Apply — Dry-run mode
+
+When invoked with `--dry-run` (e.g., `/retro apply --dry-run` or `/retro apply --dry-run <pass-file>`), apply mode runs the full procedure with **zero file writes**:
+
+- Steps 1-2 (validate, check Applied footer) run as normal — read-only.
+- Step 3 (apply diffs) is simulated: for each `✅` or `🔶` patch, read the target file, *compute* the patched version in memory, validate the *computed* version (markdown headings, YAML, etc.) — but do not write the target file.
+- Step 4 (append Applied footer) is suppressed: the pass document is not modified.
+- Step 5 (report) runs but is reframed for preview:
+
+  > **DRY RUN — no files changed.** Would apply: 4 patches across 2 target files. Would skip: 1 (rejected). Would leave untouched: 2 (`⬜ pending`).
+  > 
+  > Per-patch preview:
+  > - Patch 1 → CHARTER.md §Decision authority — would apply (clean diff context).
+  > - Patch 2 → SKILL.md §Phase 2 — would apply (revised version).
+  > - Patch 3 → producer-skill.md — **would FAIL**: diff context mismatch (file changed since synthesis). Re-synth recommended.
+  > - …
+  > 
+  > To apply for real, re-run without `--dry-run`.
+
+**Use cases:**
+
+- **Many-target-file passes** — preview cumulative effect across files before committing.
+- **Stale-synthesis check** — surface diff-context mismatches without partially applying.
+- **Validation gates** — CI / pre-merge checks that pass-files don't break their targets.
+
+**Constraint:** `--dry-run` is read-only on the pass file too. It does NOT append a "would-apply" footer, since that footer is the dedup signal for *actual* application. Dry-run reports stay in-conversation; the pass document is untouched.
+
 ### Apply — Stop conditions
 
 - **Pass file missing or unparseable** → report and stop.
@@ -321,9 +350,10 @@ Read the named pass file. Parse:
 ### Apply — What it does NOT do
 
 - Open PRs, commit, push, or otherwise touch git. Target-file edits live in the working directory; the user (or their agent) wraps them in commits / PRs through their own workflow.
-- Modify the original patch body in the pass file. Only the Applied footer is appended; the patch sections themselves stay as the user marked them.
+- Modify the original patch body in the pass file. Only the Applied footer is appended (and only outside `--dry-run`); the patch sections themselves stay as the user marked them.
 - Cluster across multiple pass documents. One pass file per invocation.
 - Apply patches whose target file no longer exists or has moved (record as a skipped patch in the footer with reason).
+- (Under `--dry-run`) write anything to disk. Output is in-conversation only.
 
 ### Apply — Recursion
 
