@@ -115,6 +115,30 @@ A cluster qualifies on the same ≥2/≥2 rule.
 
 For each, write a one-paragraph "what's blind" note.
 
+### Step 4.5 — Saturation check
+
+After both clustering steps complete (Step 3 + Step 4), check whether the latest sessions in the filter window introduce new cluster types versus the prior sessions. Adapted from [Hamel Husain & Shreya Shankar's evals workflow](https://maven.com/parlance-labs/evals): *"if ~20 new traces don't surface a new failure category, the corpus is saturated."*
+
+**Procedure:**
+
+1. Walk the filtered sessions in date order. Let `N` = total filtered session count.
+2. Pick a saturation window `K`. Default: `K = 5` (the minimum useful comparison). If the user supplied a custom window via args (future enhancement), use that.
+3. **Require `N > K`.** If not, set saturation status to `insufficient data` and skip the rest.
+4. Collect the set of cluster types active across sessions `1..N-K` (call it *prior set*).
+5. Collect the set of cluster types active across sessions `N-K+1..N` (call it *recent set*).
+6. Compute `new_in_recent = recent_set − prior_set`.
+7. Set saturation status:
+   - **`saturated`** if `new_in_recent` is empty — the last `K` sessions added no new cluster types.
+   - **`active`** if `new_in_recent` is non-empty — recent sessions are still surfacing new patterns; the corpus hasn't converged.
+
+**Saturation is a signal, not a stop.** `/retro` continues with patch proposal in either case. The user reads the status to decide whether to keep collecting traces (if `active`) or to focus on fixing the surfaced patterns (if `saturated`).
+
+**Edge cases:**
+
+- **Single-source filter (e.g., `/retro rhythm`):** the saturation read is for that source only. Sessions from other sources don't affect it.
+- **Very large archives (N >> 20):** the K=5 default reads a small recent slice. To read the full Hamel-scale window, the user filters to recent traces (e.g., `/retro 2026-05`) so the saturation check fires over the relevant N.
+- **Mixed-source archives:** if the recent window happens to draw from a different source than the prior window, the saturation read can be misleading. Note the source distribution in the §Anti-pattern self-check.
+
 ### Step 5 — Propose patches (gated)
 
 For each qualifying cluster (failure-mode or blind-spot), propose one concrete patch. A patch is one of:
@@ -161,6 +185,8 @@ Accuracy roll-up (✅ / rated): N%.            <!-- rated = total − ⬜ -->
 Raw accuracy (✅ / total): N%.                 <!-- emit only when ⬜ > 0 -->
 Calibration roll-up ((✅+❌+🔶+🔷+➖+⬜) / total): N%.
 Aspirational rate (🤷 / total): N%.
+
+Saturation status: <saturated | active | insufficient data> (window K = N).
 
 ---
 
