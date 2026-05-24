@@ -1,0 +1,29 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "align",
+  "description": "Single-plugin marketplace for /align — install via /plugin marketplace add ggrigo/align then /plugin install align@align.",
+  "owner": {
+    "name": "Georgios Grigoriadis",
+    "email": "ggrigo@gmail.com"
+  },
+  "plugins": [
+    {
+      "name": "align",
+      "description": "Personal evals for Claude Code: capture the corrections you'd otherwise mutter and forget. Rate LLM claims (correct/wrong/almost/needs-nuance/can't-verify/irrelevant/skipped) in a local HTML form, archive as machine-readable markdown, feed patterns back into prompts and CLAUDE.md.",
+      "author": {
+        "name": "Georgios Grigoriadis",
+        "email": "ggrigo@gmail.com"
+      },
+      "category": "development",
+      "source": ".",
+      "homepage": "https://github.com/ggrigo/align",
+      "tags": [
+        "evals",
+        "personal-evals",
+        "human-in-the-loop",
+        "criteria-drift",
+        "feedback-loop"
+      ]
+    }
+  ]
+}

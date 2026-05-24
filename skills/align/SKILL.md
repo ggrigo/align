@@ -1,3 +1,15 @@
+---
+name: align
+description: |
+  Epistemic feedback loop. Generate an interactive HTML form where the user rates LLM-produced claims as correct, wrong, almost, needs-nuance, can't-verify, irrelevant, or skipped — plus add notes and flag missing items. Submit downloads an align.md that Claude reads back to apply corrections to TASKS.md, smart-memory (guarded), and the per-session archive.
+
+  Source-agnostic by contract: any producer (rhythm, digest, briefing, todo, code review, financial recon, anything) that emits claims matching the Claim Adapter Contract can be aligned.
+
+  Trigger words: "/align", "align", "give feedback", "correct the rhythm", "that's not right", "let me correct", "alignment feedback", "epistemic feedback", "calibrate".
+
+  IMPORTANT: This skill writes output to the ACTIVE WORKING FOLDER — not the root selected folder. If no active folder is specified, ask.
+---
+
 <!-- v0.5.0 — May 22, 2026. Phase 3 Correction SDK extraction. Slimmed SKILL.md from
      349 to ~220 lines; moved rhythm-specific extraction heuristics, context slug
      catalog, and active-folder convention to references/claim-extraction-rhythm.md.
@@ -37,17 +49,6 @@
      manifest (align-index.md) auto-append, /retro integration point.
      v0.1.0 — March 11, 2026. Created during /rhythm session to close the epistemic
      feedback loop. -->
----
-name: align
-description: |
-  Epistemic feedback loop. Generate an interactive HTML form where the user rates LLM-produced claims as correct, wrong, almost, needs-nuance, can't-verify, irrelevant, or skipped — plus add notes and flag missing items. Submit downloads an align.md that Claude reads back to apply corrections to TASKS.md, smart-memory (guarded), and the per-session archive.
-
-  Source-agnostic by contract: any producer (rhythm, digest, briefing, todo, code review, financial recon, anything) that emits claims matching the Claim Adapter Contract can be aligned.
-
-  Trigger words: "/align", "align", "give feedback", "correct the rhythm", "that's not right", "let me correct", "alignment feedback", "epistemic feedback", "calibrate".
-
-  IMPORTANT: This skill writes output to the ACTIVE WORKING FOLDER — not the root selected folder. If no active folder is specified, ask.
----
 
 # Align — Epistemic Feedback Loop
 

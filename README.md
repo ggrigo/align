@@ -44,29 +44,27 @@ align/
 ├── .claude-plugin/
 │   └── plugin.json                          # manifest (v0.7.0)
 ├── commands/
-│   ├── align.md                             # legacy /align entrypoint (thin)
-│   └── retro.md                             # legacy /retro entrypoint
+│   ├── align.md                             # /align command (thin entrypoint → skills/align/)
+│   └── retro.md                             # /retro command (full skill body)
 ├── skills/
 │   ├── align/
-│   │   ├── SKILL.md                         # canonical /align skill (Phase 1/2 flow)
+│   │   ├── SKILL.md                         # /align skill: Phase 1/2 flow, Claim Adapter Contract
 │   │   └── align-template.html              # interactive feedback form
 │   └── retro/
-│       └── SKILL.md                         # canonical /retro skill (synthesis + apply)
+│       └── SKILL.md                         # /retro skill: synthesis + apply mode
 ├── references/
 │   ├── claim-extraction-rhythm.md           # rhythm-specific producer heuristics
 │   ├── archive-format.md                    # manifest schema, file layout, invariants
 │   ├── integrations.md                      # TASKS.md, smart-memory queue, /retro
 │   ├── retro-design.md                      # /retro design + review-gate mechanics
 │   └── v0.7.0-design.md                     # most recent release design
-├── SKILL.md                                 # legacy /align root location (additive-phase compat)
-├── align-template.html                      # legacy template (additive-phase compat)
 ├── README.md                                # you are here
 ├── CONTRIBUTING.md                          # contributor guide; maintainer disclosure
 ├── SECURITY.md                              # disclosure protocol; smart-memory caveat
 └── LICENSE                                  # MIT
 ```
 
-Multi-skill plugin in the **additive migration phase** as of v0.7.0: the canonical paths going forward are `skills/align/SKILL.md` and `skills/retro/SKILL.md`; the legacy `commands/` files and root `SKILL.md` stay active for backwards compatibility. Skill invocation is namespaced — `/align:align` and `/align:retro` (the un-namespaced `/align` and `/retro` continue to work via the legacy paths). The `references/` files are loaded on demand by Claude when a skill cites them — they're not in the always-loaded context.
+Multi-skill plugin as of v0.7.0: `skills/align/SKILL.md` and `skills/retro/SKILL.md` are the canonical skill files. Invocation: `/align` and `/retro` (or `/align:align` and `/align:retro` for namespaced form). Skill `SKILL.md` files MUST start with `---` on line 1 (YAML frontmatter) — anything before that breaks plugin validation on Cowork. The `references/` files are loaded on demand by Claude when a skill cites them — they're not in the always-loaded context.
 
 ## Extending — using /align with a new producer
 
