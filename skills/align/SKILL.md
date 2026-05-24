@@ -192,6 +192,18 @@ Smart-memory MCP (`recall`, `remember`, `remember_facts`) is present in Cowork b
 
 Full YAML format and drain protocol: `references/integrations.md`.
 
+##### Smart-memory filter (opt-in, v0.7.0+)
+
+Before each `remember_facts()` call (or queue append), check the user's `CLAUDE.md` for an `<align-smart-memory-filter>` block. If present, apply the rules per-correction:
+
+- **Skip** the smart-memory write if a rule says so. The per-session `.md` archive still records the original.
+- **Transform** the claim text and / or reality note if a rule rewrites them. Use the transformed values in the smart-memory write; the archive still records the original.
+- **Pass through** as-is if no rule matches.
+
+If no `<align-smart-memory-filter>` block exists, behavior is identical to v0.6.0 (unfiltered).
+
+Report the filter activity in the Phase 2 summary: counts of as-is / transformed / skipped, plus anonymized examples for transformed ones. Full contract and audit-trail format: `references/integrations.md` §Smart-memory filter.
+
 #### Step 4 — Archive both files as a datapoint
 
 Every session produces a datapoint = one `.html` + one `.md`. Copy both into `rhythm/align-archive/`. Delete the `.md` from the dropbox once archived. Keep the `.html` in the active folder for local reference; the archive copy is the canonical one for `/retro`.
