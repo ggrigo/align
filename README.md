@@ -124,6 +124,44 @@ If you want LangSmith / Humanloop / Braintrust / Phoenix functionality, install 
 - **Hamel Husain & Shreya Shankar's evals course** ([AI Evals For Engineers & PMs](https://maven.com/parlance-labs/evals)) — Hamel and Shreya (the EvalGen lead author above) teach the manual workflow: review ~100+ traces by hand, open-code reactions in free text, cluster into a failure taxonomy, count categories, iterate to theoretical saturation. `/align` operationalizes the inner loop — each per-claim rating is an open-coded observation; the 7-shape taxonomy is the failure-taxonomy UI; `/retro` is the across-session clustering step. The two prior-art entries above aren't independent — Shreya leads on EvalGen and co-teaches with Hamel.
 - **Claude Code plugin-eval tooling** ([cc-plugin-eval](https://github.com/sjnims/cc-plugin-eval), [claude-eval](https://github.com/bkper/claude-eval), [promptfoo for Claude Code skills](https://www.mager.co/blog/2026-02-23-skills-validate-eval/)) — adjacent in name, complementary in role. These sit at the **build-time gate**: a plugin author validates that their skill triggers correctly and produces output of the expected shape, automated by LLM-as-judge or deterministic detection. `/align` sits at the **run-time inner loop**: a plugin consumer grades the actual claims that came out of a real session. Same plugin lifecycle, different points. A plugin author *should* use the build-time tools in CI; a plugin user *should* use `/align` in their inner loop. Pair them; don't choose.
 
+## FAQ
+
+### Claude keeps making the same mistakes — what does `/align` do that Claude's Profile Preferences and `CLAUDE.md` don't?
+
+Claude's [Profile Preferences](https://promptoptimizer.tools/blog/how-to-set-up-claude-profile-preferences) and `CLAUDE.md` capture **generic preferences** that apply across sessions — *"don't use bullet points,"* *"always cite sources,"* *"prefer Python over JavaScript."* They run before you type. They're rules.
+
+`/align` captures **specific corrections from specific outputs** — *"claim 4 is wrong, the deadline is 2026-06-15 not 2026-05-30,"* *"claim 12 confuses two people."* They run after Claude responds. They're observations.
+
+The two complement each other. Use Profile Preferences for the durable rules. Use `/align` to surface what *should become* a rule by capturing the specific facts that go wrong. After 90 days of corrections in the archive, patterns emerge — and `/retro` synthesizes them into prompt edits + new `CLAUDE.md` lines.
+
+### How do I save Claude's corrections so it doesn't make the same mistake next session?
+
+Three layers, depending on the shape of the correction:
+
+1. **One-off fact** (e.g., "K16 ships 2026-06-15, not 2026-05-30"): rate the wrong claim in the `/align` form, write the reality in the note. The downloaded `.md` carries the correction; `/align done` writes it to `TASKS.md` (if it's a task) and the `decisions` smart-memory collection (if it's a fact). Next session, Claude reads smart-memory.
+
+2. **Generic preference** (e.g., "always show me the data table before the summary"): write it to your `CLAUDE.md` directly. `/align` doesn't replace this — but a pattern of corrections may reveal *which* preferences to add.
+
+3. **Producer-side flaw** (e.g., "the digest skill is mis-extracting attendees"): after several sessions in the archive, `/retro` identifies the pattern and proposes a patch to the producer skill's prompt.
+
+### How is `/align` different from LangSmith's "Align Evals"?
+
+Different function, different audience. LangSmith Align Evals calibrates an **LLM-judge model** for **dev teams** running production traces — it adjusts the judge's prompt with few-shot examples so its automated scores agree with humans more often. `/align` is **human-in-the-loop** **per-claim** review by the **plugin's end user** in their session inner-loop — there is no judge to calibrate; the human IS the judge. Same lifecycle of "make AI evaluation better," different layer.
+
+### Doesn't better prompting / RAG / system-prompt techniques solve this?
+
+Partly. Upstream techniques (chain-of-thought, grounded quotes, abstention tuning, ensemble verification) **reduce** the rate of wrong claims. They don't capture the wrong claims that still slip through. `/align` is downstream of all those — it's about what to do with the wrong claims that survive your upstream defenses, so they don't recur.
+
+The two are stackable. Better prompts shrink the input to `/align`. `/align` makes the residue not evaporate.
+
+### Why per-claim instead of grading the whole response?
+
+Most LLM outputs are a synthesis of many statements at once. *"Of the seven claims in this digest, claims 1–3 are right, claim 4 confused two people, claim 5 has a stale date, claims 6–7 are correct."* Per-response grading collapses that into a single noisy signal; per-claim grading preserves the structure of where the mistakes actually were. The archive of per-claim ratings is what `/retro` clusters on — which is why the granularity matters.
+
+### Is the archive a flight recorder for future legal / audit needs?
+
+No. The archive is **for the operator**, not for compliance or external accountability. It's local, append-only `.md` files in the operator's own repo. There's no team dashboard, no shared queue, no org-wide metrics. If you need org-scale eval-ops, look at [LangSmith, Braintrust, Humanloop, Langfuse, MLflow, Phoenix](#what-this-does-not-do) — they live in that lane.
+
 ## Maintenance
 
 `/align` is authored by [Georgios Grigoriadis](https://github.com/ggrigo) and maintained by **agent ggrigo** ([`agent-ggrigo`](https://github.com/agent-ggrigo)) — an LLM agent operating on a standing mandate from Georgios. The agent identifies itself as the maintainer in issues, PRs, releases, and replies. It defers to Georgios on contested judgment.
