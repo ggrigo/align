@@ -2,525 +2,637 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>Align — {{CONTEXT}}</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>align — {{CONTEXT}} · {{DATE}}</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
 <style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; background: #f7f7f5; color: #1a1a1a; -webkit-tap-highlight-color: transparent; }
+/* ════════════════════════════════════════════════════════════════════════════
+   align rating form — design tokens via preset
+   Ported from design-tokens/align-design-handoff-2026-05-24.zip
+   ──────────────────────────────────────────────────────────────────────────── */
 
-  /* ── Header ── */
-  .header { padding: 1rem 1.25rem; border-bottom: 1px solid #e5e5e3; position: sticky; top: 0; background: #f7f7f5; z-index: 10; }
-  .header h1 { color: #111; font-size: 1.15rem; font-weight: 600; padding-right: 9rem; }
-  .header .meta { color: #888; font-size: 0.72rem; margin-top: 0.15rem; display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; padding-right: 9rem; }
-  .header-download { position: absolute; top: 0.85rem; right: 1.25rem; background: #111; color: #fff; border: none; padding: 0.5rem 0.8rem; border-radius: 7px; font-size: 0.76rem; font-weight: 600; cursor: pointer; z-index: 11; }
-  .header-download:hover { background: #333; }
-  .header-download:active { transform: scale(0.97); }
-  .tag { display: inline-block; padding: 0.1rem 0.4rem; border-radius: 10px; font-size: 0.6rem; font-weight: 500; }
-  .tag-src { background: #e8f0fe; color: #1a73e8; }
-  .tag-cat { background: #f3e8ff; color: #7c3aed; }
-  .tag-file { background: #fef3c7; color: #b45309; }
-  .tag-acc { background: #dcfce7; color: #16a34a; }
+:root {
+  --c-correct:  oklch(0.62 0.14 145);
+  --c-wrong:    oklch(0.60 0.19 25);
+  --c-almost:   oklch(0.72 0.13 75);
+  --c-nuance:   oklch(0.58 0.15 260);
+  --c-unknown:  oklch(0.62 0.10 310);
+  --c-skip:     oklch(0.62 0.01 100);
+  --c-correct-tint: oklch(0.95 0.04 145);
+  --c-wrong-tint:   oklch(0.94 0.05 25);
+  --c-almost-tint:  oklch(0.95 0.05 75);
+  --c-nuance-tint:  oklch(0.95 0.04 260);
+  --c-unknown-tint: oklch(0.95 0.03 310);
+  --c-skip-tint:    oklch(0.95 0.01 100);
+  --side-w: 280px;
+  --rail-w: 320px;
+  --top-h: 64px;
+  --accent: #b56a3e;
+}
 
-  /* ── Sticky summary bar (mobile) ── */
-  .summary-bar { position: sticky; top: 48px; background: #fff; z-index: 9; padding: 0.5rem 1.25rem; border-bottom: 1px solid #e5e5e3; display: flex; align-items: center; gap: 0.6rem; font-size: 0.7rem; }
-  .summary-bar .s { color: #999; }
-  .summary-bar .v { font-weight: 600; color: #555; }
-  .progress-bar { flex: 1; height: 3px; background: #e5e5e3; border-radius: 2px; overflow: hidden; display: flex; }
-  .progress-bar .seg-correct { background: #22c55e; }
-  .progress-bar .seg-wrong { background: #ef4444; }
-  .progress-bar .seg-almost { background: #f59e0b; }
-  .progress-bar .seg-nuance { background: #6366f1; }
-  .progress-bar .seg-skip { background: #9ca3af; }
-  .progress-bar .seg-unknown { background: #a78bfa; }
+:root[data-preset="editorial"] {
+  --bg:        oklch(0.97 0.012 75);
+  --bg-soft:   oklch(0.985 0.008 75);
+  --surface:   oklch(0.995 0.006 75);
+  --surface-2: oklch(0.96 0.014 75);
+  --fg:        oklch(0.22 0.015 60);
+  --fg-soft:   oklch(0.45 0.018 60);
+  --fg-muted:  oklch(0.62 0.015 60);
+  --fg-faint:  oklch(0.78 0.012 60);
+  --border:    oklch(0.90 0.014 70);
+  --border-soft: oklch(0.94 0.012 70);
+  --shadow:    0 1px 2px rgba(60, 40, 20, 0.04), 0 8px 32px rgba(60, 40, 20, 0.06);
+  --shadow-sm: 0 1px 2px rgba(60, 40, 20, 0.05);
+  --f-display: 'Newsreader', Georgia, serif;
+  --f-body:    'IBM Plex Sans', system-ui, sans-serif;
+  --f-mono:    'IBM Plex Mono', ui-monospace, monospace;
+  --hero-size: 38px;
+  --hero-lh:   1.18;
+  --hero-weight: 500;
+  --hero-tracking: -0.012em;
+}
 
-  /* ── Claims panel ── */
-  .container { display: block; }
-  .claims-panel { padding: 0.5rem 0.75rem 140px; max-width: 720px; margin: 0 auto; }
+:root[data-preset="modern"] {
+  --bg:        oklch(0.97 0.003 250);
+  --bg-soft:   oklch(0.98 0.002 250);
+  --surface:   oklch(1 0 0);
+  --surface-2: oklch(0.96 0.004 250);
+  --fg:        oklch(0.18 0.012 264);
+  --fg-soft:   oklch(0.40 0.012 264);
+  --fg-muted:  oklch(0.55 0.010 264);
+  --fg-faint:  oklch(0.72 0.008 264);
+  --border:    oklch(0.91 0.006 264);
+  --border-soft: oklch(0.94 0.005 264);
+  --shadow:    0 1px 2px rgba(15, 23, 42, 0.04), 0 12px 36px rgba(15, 23, 42, 0.07);
+  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.05);
+  --f-display: 'Space Grotesk', system-ui, sans-serif;
+  --f-body:    'Space Grotesk', system-ui, sans-serif;
+  --f-mono:    'JetBrains Mono', ui-monospace, monospace;
+  --hero-size: 34px;
+  --hero-lh:   1.18;
+  --hero-weight: 600;
+  --hero-tracking: -0.022em;
+}
 
-  /* ── Claim card ── */
-  .claim { background: #fff; border: 1px solid #e5e5e3; border-radius: 10px; margin-bottom: 0.5rem; overflow: hidden; transition: border-color 0.15s, opacity 0.15s; }
-  .claim.correct { border-left: 3px solid #22c55e; }
-  .claim.wrong { border-left: 3px solid #ef4444; }
-  .claim.almost { border-left: 3px solid #f59e0b; }
-  .claim.nuance { border-left: 3px solid #6366f1; }
-  .claim.unknown { border-left: 3px solid #a78bfa; }
-  .claim.rated { opacity: 0.55; }
-  .claim.rated:hover, .claim.rated.expanded { opacity: 1; }
-  .claim.focused { opacity: 1; box-shadow: 0 0 0 2px #6366f1; }
+:root[data-preset="terminal"] {
+  --bg:        oklch(0.16 0.008 130);
+  --bg-soft:   oklch(0.19 0.008 130);
+  --surface:   oklch(0.21 0.008 130);
+  --surface-2: oklch(0.24 0.008 130);
+  --fg:        oklch(0.93 0.012 100);
+  --fg-soft:   oklch(0.78 0.014 100);
+  --fg-muted:  oklch(0.60 0.012 100);
+  --fg-faint:  oklch(0.42 0.010 100);
+  --border:    oklch(0.30 0.010 130);
+  --border-soft: oklch(0.26 0.010 130);
+  --shadow:    0 1px 2px rgba(0, 0, 0, 0.4), 0 8px 32px rgba(0, 0, 0, 0.4);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --f-display: 'JetBrains Mono', ui-monospace, monospace;
+  --f-body:    'JetBrains Mono', ui-monospace, monospace;
+  --f-mono:    'JetBrains Mono', ui-monospace, monospace;
+  --hero-size: 26px;
+  --hero-lh:   1.32;
+  --hero-weight: 500;
+  --hero-tracking: -0.002em;
+  --c-correct: oklch(0.78 0.18 145);
+  --c-wrong:   oklch(0.72 0.20 25);
+  --c-almost:  oklch(0.82 0.16 75);
+  --c-nuance:  oklch(0.72 0.17 260);
+  --c-unknown: oklch(0.74 0.13 310);
+  --c-skip:    oklch(0.70 0.01 100);
+  --c-correct-tint: oklch(0.30 0.07 145);
+  --c-wrong-tint:   oklch(0.30 0.08 25);
+  --c-almost-tint:  oklch(0.30 0.06 75);
+  --c-nuance-tint:  oklch(0.30 0.07 260);
+  --c-unknown-tint: oklch(0.30 0.05 310);
+  --c-skip-tint:    oklch(0.26 0.01 100);
+}
 
-  .claim-main { padding: 0.7rem 0.9rem; cursor: pointer; }
-  .claim-time { font-size: 0.65rem; color: #999; font-weight: 600; font-variant-numeric: tabular-nums; }
-  .claim-id { font-size: 0.65rem; color: #aaa; font-weight: 600; }
-  .claim-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.15rem; }
-  .claim-text { font-size: 0.85rem; color: #222; font-weight: 500; margin: 0.15rem 0 0.25rem; line-height: 1.45; }
-  .claim-source { font-size: 0.7rem; color: #999; line-height: 1.4; }
-  .claim-tags { margin-top: 0.4rem; display: flex; gap: 0.25rem; flex-wrap: wrap; }
+:root[data-density="compact"] { --hero-size: 26px; --row-h: 36px; }
+:root[data-density="comfy"]   { --row-h: 44px; }
 
-  /* ── Expandable detail ── */
-  .claim-detail { display: none; border-top: 1px solid #f0f0ee; padding: 0.7rem 0.9rem; background: #fafaf8; }
-  .claim.expanded .claim-detail { display: block; }
-  .detail-label { font-size: 0.65rem; color: #999; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.2rem; margin-top: 0.6rem; }
-  .detail-label:first-child { margin-top: 0; }
-  .detail-content { font-size: 0.8rem; color: #666; line-height: 1.5; white-space: pre-wrap; word-break: break-word; }
-  .detail-content a { color: #6366f1; text-decoration: none; }
-  .detail-link { display: inline-block; margin-top: 0.3rem; font-size: 0.75rem; color: #6366f1; text-decoration: none; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
+body { font-family: var(--f-body); background: var(--bg); color: var(--fg); font-size: 14px; line-height: 1.5; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; overflow: hidden; }
+button { font-family: inherit; cursor: pointer; border: none; background: none; color: inherit; }
+textarea { font-family: inherit; }
+kbd { font-family: var(--f-mono); font-size: 10px; padding: 1px 5px; border: 1px solid var(--border); border-radius: 4px; background: var(--surface); color: var(--fg-soft); font-weight: 500; }
 
-  /* ── Rating controls ── */
-  .claim-controls { border-top: 1px solid #f0f0ee; padding: 0.4rem 0.6rem; display: flex; gap: 0.2rem; }
-  .r-btn { flex: 1; background: #f3f4f6; border: 1px solid transparent; color: #9ca3af; padding: 0.38rem; border-radius: 6px; font-size: 0.65rem; cursor: pointer; text-align: center; -webkit-user-select: none; user-select: none; transition: all 0.1s; }
-  .r-btn:active { transform: scale(0.95); }
-  .r-btn.sel-correct { background: #dcfce7; border-color: #86efac; color: #16a34a; font-weight: 600; }
-  .r-btn.sel-wrong { background: #fee2e2; border-color: #fca5a5; color: #dc2626; font-weight: 600; }
-  .r-btn.sel-almost { background: #fef3c7; border-color: #fcd34d; color: #d97706; font-weight: 600; }
-  .r-btn.sel-nuance { background: #e0e7ff; border-color: #a5b4fc; color: #4f46e5; font-weight: 600; }
-  .r-btn.sel-skip { background: #f3f4f6; border-color: #d1d5db; color: #6b7280; font-weight: 600; }
-  .r-btn.sel-unknown { background: #ede9fe; border-color: #c4b5fd; color: #7c3aed; font-weight: 600; }
+.app { height: 100vh; display: grid; grid-template-rows: var(--top-h) 1fr; }
 
-  /* ── Machine-only badge ── */
-  .badge-machine { display: inline-block; padding: 0.05rem 0.35rem; border-radius: 10px; font-size: 0.55rem; font-weight: 600; background: #ede9fe; color: #7c3aed; margin-left: 0.4rem; vertical-align: middle; }
+.topbar { display: grid; grid-template-columns: 1fr auto auto; align-items: center; gap: 24px; padding: 0 24px; background: var(--bg); border-bottom: 1px solid var(--border); }
+.topbar__brand { display: flex; align-items: center; gap: 12px; }
+.topbar__mark { width: 28px; height: 28px; display: grid; place-items: center; background: var(--accent); color: var(--bg); border-radius: 7px; font-size: 16px; font-weight: 600; }
+.topbar__name { font-family: var(--f-display); font-size: 20px; font-weight: 600; letter-spacing: -0.02em; }
+.topbar__ctx { font-family: var(--f-mono); font-size: 11px; padding: 3px 8px; background: var(--surface-2); border: 1px solid var(--border-soft); border-radius: 999px; color: var(--fg-soft); }
+.topbar__meta { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--fg-muted); font-family: var(--f-mono); flex-wrap: wrap; }
+.topbar__meta b { color: var(--fg); font-weight: 500; }
+.topbar__sep { color: var(--fg-faint); }
+.topbar__acc b { color: var(--accent); }
+.topbar__dl { display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px; background: var(--fg); color: var(--bg); border-radius: 8px; font-size: 13px; font-weight: 500; letter-spacing: -0.01em; transition: transform 0.1s, opacity 0.15s; }
+.topbar__dl:hover { opacity: 0.9; }
+.topbar__dl:active { transform: scale(0.97); }
 
-  /* ── Notes ── */
-  .claim-notes { border-top: 1px solid #f0f0ee; padding: 0.5rem 0.7rem; display: none; }
-  .claim-notes.visible { display: block; }
-  .claim-notes textarea { width: 100%; background: #fafaf8; border: 1px solid #e5e5e3; border-radius: 6px; color: #333; padding: 0.4rem; font-size: 0.8rem; font-family: inherit; resize: none; min-height: 44px; }
-  .claim-notes textarea:focus { border-color: #6366f1; outline: none; box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.15); }
-  .claim-notes textarea::placeholder { color: #bbb; }
+.body { display: grid; grid-template-columns: var(--side-w) 1fr var(--rail-w); overflow: hidden; }
 
-  /* ── Pattern alerts ── */
-  .pattern-alert { background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px; padding: 0.5rem 0.7rem; margin: 0.5rem 0.75rem; font-size: 0.75rem; color: #92400e; }
-  .pattern-alert strong { color: #78350f; }
-  .revisit-banner { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 0.5rem 0.7rem; margin: 0.5rem 0.75rem; font-size: 0.75rem; color: #1e40af; display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
-  .revisit-banner strong { color: #1e3a8a; }
-  .revisit-banner .dismiss { background: transparent; border: 1px solid #bfdbfe; color: #1e40af; border-radius: 4px; padding: 0.15rem 0.5rem; font-size: 0.7rem; cursor: pointer; margin-left: auto; }
-  .revisit-banner .dismiss:hover { background: #dbeafe; }
+.sidebar { border-right: 1px solid var(--border); background: var(--bg-soft); display: flex; flex-direction: column; overflow: hidden; }
+.sidebar__hd { display: flex; align-items: baseline; justify-content: space-between; padding: 16px 20px 10px; border-bottom: 1px solid var(--border-soft); }
+.sidebar__eyebrow { font-family: var(--f-mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--fg-muted); }
+.sidebar__count { font-family: var(--f-mono); font-size: 11px; color: var(--fg-soft); font-variant-numeric: tabular-nums; }
+.sidebar__list { flex: 1; overflow-y: auto; padding: 6px 8px; scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
 
-  /* ── FABs (mobile) ── */
-  .fab-row { position: fixed; bottom: 1rem; right: 1rem; display: flex; gap: 0.5rem; z-index: 15; }
-  .fab { width: 44px; height: 44px; border-radius: 50%; border: none; font-size: 1.1rem; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.12); display: flex; align-items: center; justify-content: center; }
-  .fab-add { background: #fff; color: #666; font-size: 1.3rem; border: 1px solid #e5e5e3; }
-  .fab-export { background: #111; color: #fff; }
-  .fab-export:disabled { background: #e5e5e3; color: #bbb; box-shadow: none; }
+.row { width: 100%; display: grid; grid-template-columns: 28px 18px 1fr 18px; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 7px; text-align: left; font-size: 12.5px; color: var(--fg-soft); line-height: 1.35; position: relative; transition: background 0.12s, color 0.12s; border-left: 2px solid transparent; }
+.row:hover { background: var(--surface-2); color: var(--fg); }
+.row__num { font-family: var(--f-mono); font-size: 10px; color: var(--fg-faint); font-variant-numeric: tabular-nums; letter-spacing: 0.04em; }
+.row__icon { font-size: 13px; color: var(--fg-muted); text-align: center; }
+.row__text { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.row__dot { font-size: 11px; text-align: center; color: var(--fg-faint); font-weight: 600; }
+.row--focused { background: var(--surface); color: var(--fg); border-left-color: var(--accent); box-shadow: var(--shadow-sm); }
+.row--focused .row__num { color: var(--accent); }
+.row--rated { color: var(--fg-muted); }
+.row--rated.row--focused { color: var(--fg); }
+.row--correct .row__dot { color: var(--c-correct); }
+.row--wrong   .row__dot { color: var(--c-wrong); }
+.row--almost  .row__dot { color: var(--c-almost); }
+.row--nuance  .row__dot { color: var(--c-nuance); }
+.row--unknown .row__dot { color: var(--c-unknown); }
+.row--skip    .row__dot { color: var(--c-skip); }
 
-  /* ── Bottom sheet (mobile missing items) ── */
-  .bottom-sheet { position: fixed; bottom: 0; left: 0; right: 0; background: #fff; border-top: 1px solid #e5e5e3; padding: 1rem; z-index: 20; transform: translateY(100%); transition: transform 0.25s ease; max-width: 720px; margin: 0 auto; box-shadow: 0 -4px 16px rgba(0,0,0,0.08); }
-  .bottom-sheet.open { transform: translateY(0); }
-  .bottom-sheet h3 { color: #222; font-size: 0.85rem; margin-bottom: 0.5rem; }
-  .bottom-sheet textarea { width: 100%; background: #fafaf8; border: 1px solid #e5e5e3; border-radius: 6px; color: #333; padding: 0.5rem; font-size: 0.85rem; font-family: inherit; resize: none; min-height: 60px; }
-  .bottom-sheet textarea:focus { border-color: #6366f1; outline: none; }
-  .sheet-actions { display: flex; gap: 0.5rem; margin-top: 0.5rem; }
-  .sheet-btn { flex: 1; padding: 0.45rem; border-radius: 6px; font-size: 0.8rem; font-weight: 600; cursor: pointer; text-align: center; border: none; }
-  .sheet-btn-close { background: #f3f4f6; color: #555; }
-  .sheet-btn-save { background: #111; color: #fff; }
+.main { overflow-y: auto; background: var(--bg); display: flex; flex-direction: column; scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
+.focused { flex: 1; padding: 32px 56px 40px; max-width: 760px; width: 100%; margin: 0 auto; }
+.focused__hd { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; font-family: var(--f-mono); font-size: 11px; color: var(--fg-muted); flex-wrap: wrap; }
+.focused__counter { display: inline-flex; align-items: baseline; gap: 2px; font-variant-numeric: tabular-nums; }
+.focused__counter .num { color: var(--accent); font-weight: 600; font-size: 14px; }
+.focused__counter .sep { color: var(--fg-faint); }
+.focused__counter .tot { color: var(--fg-muted); }
+.focused__src { display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; background: var(--surface-2); border-radius: 999px; color: var(--fg-soft); }
+.focused__src-icon { color: var(--fg-muted); font-size: 12px; }
+.focused__time { color: var(--fg-muted); margin-left: 2px; }
+.badge-machine { font-family: var(--f-mono); font-size: 9.5px; letter-spacing: 0.04em; text-transform: uppercase; padding: 3px 8px; border: 1px solid var(--c-unknown); color: var(--c-unknown); border-radius: 999px; background: var(--c-unknown-tint); }
+.focused__claim { font-family: var(--f-display); font-size: var(--hero-size); line-height: var(--hero-lh); font-weight: var(--hero-weight); letter-spacing: var(--hero-tracking); color: var(--fg); margin-bottom: 14px; text-wrap: pretty; }
+.focused__desc { color: var(--fg-soft); font-size: 15px; line-height: 1.55; margin-bottom: 22px; text-wrap: pretty; }
+.focused__detail { font-family: var(--f-mono); font-size: 12px; line-height: 1.65; color: var(--fg-soft); background: var(--surface); border: 1px solid var(--border-soft); border-left: 2px solid var(--accent); border-radius: 6px; padding: 14px 18px; margin-bottom: 22px; white-space: pre-wrap; overflow-x: auto; max-height: 240px; overflow-y: auto; }
+.focused__tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 32px; }
+.tag { font-family: var(--f-mono); font-size: 10.5px; padding: 3px 9px; border-radius: 999px; background: var(--surface-2); color: var(--fg-soft); border: 1px solid var(--border-soft); }
+.tag--cat  { color: var(--accent); border-color: color-mix(in oklab, var(--accent) 30%, var(--border)); background: color-mix(in oklab, var(--accent) 8%, var(--bg)); }
+.tag--file { color: var(--fg-muted); }
+.tag--link { color: var(--accent); text-decoration: none; cursor: pointer; }
+.tag--link:hover { background: color-mix(in oklab, var(--accent) 15%, var(--bg)); }
 
-  /* ── Desktop: two-panel layout ── */
-  @media (min-width: 768px) {
-    .summary-bar { display: none; }
-    .container { display: flex; height: calc(100vh - 52px); }
-    .claims-panel { flex: 1; overflow-y: auto; padding: 1rem; padding-bottom: 2rem; max-width: none; }
-    .summary-panel { display: block; width: 300px; padding: 1.25rem; overflow-y: auto; background: #fff; border-left: 1px solid #e5e5e3; flex-shrink: 0; }
-    .fab-row { display: none; }
-    .keyboard-hint { display: block; }
-    .claim-main { padding: 0.8rem 1rem; }
-    .r-btn { padding: 0.4rem; font-size: 0.7rem; }
-  }
-  @media (max-width: 767px) {
-    .container { display: block; }
-    .summary-panel { display: none; }
-    .keyboard-hint { display: none; }
-  }
+.rate { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; margin-bottom: 24px; padding: 6px; background: var(--surface); border: 1px solid var(--border-soft); border-radius: 12px; box-shadow: var(--shadow-sm); }
+.rate__btn { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; padding: 12px 6px; border-radius: 8px; color: var(--fg-muted); background: transparent; border: 1px solid transparent; font-size: 12px; font-weight: 500; transition: all 0.12s; font-family: var(--f-body); }
+.rate__btn:hover { background: var(--surface-2); color: var(--fg); }
+.rate__btn:active { transform: scale(0.97); }
+.rate__key { font-family: var(--f-mono); font-size: 9.5px; font-weight: 500; color: var(--fg-faint); letter-spacing: 0.04em; background: var(--surface-2); padding: 1px 5px; border-radius: 3px; border: 1px solid var(--border-soft); }
+.rate__lbl { font-size: 12px; letter-spacing: -0.005em; }
+.rate__glyph { font-size: 18px; line-height: 1; }
+.rate__glyph--letter { font-family: var(--f-mono); font-weight: 600; font-size: 15px; }
+.rate--emoji .rate__btn { padding: 10px 4px; }
+.rate--emoji .rate__glyph { font-size: 22px; }
+.rate--letter .rate__btn { padding: 10px 4px; }
+.rate__btn--sel { font-weight: 600; }
+.rate__btn--correct { background: var(--c-correct-tint); color: var(--c-correct); border-color: color-mix(in oklab, var(--c-correct) 40%, transparent); }
+.rate__btn--wrong   { background: var(--c-wrong-tint);   color: var(--c-wrong);   border-color: color-mix(in oklab, var(--c-wrong) 40%, transparent); }
+.rate__btn--almost  { background: var(--c-almost-tint);  color: var(--c-almost);  border-color: color-mix(in oklab, var(--c-almost) 40%, transparent); }
+.rate__btn--nuance  { background: var(--c-nuance-tint);  color: var(--c-nuance);  border-color: color-mix(in oklab, var(--c-nuance) 40%, transparent); }
+.rate__btn--unknown { background: var(--c-unknown-tint); color: var(--c-unknown); border-color: color-mix(in oklab, var(--c-unknown) 40%, transparent); }
+.rate__btn--skip    { background: var(--c-skip-tint);    color: var(--c-skip);    border-color: color-mix(in oklab, var(--c-skip) 40%, transparent); }
+.rate__btn--sel .rate__key { background: color-mix(in oklab, currentColor 12%, transparent); border-color: color-mix(in oklab, currentColor 30%, transparent); color: currentColor; }
 
-  /* ── Desktop side panel ── */
-  .summary-panel { display: none; }
-  .summary-panel h2 { color: #111; font-size: 1rem; margin-bottom: 0.75rem; }
-  .summary-panel h3 { color: #999; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.05em; margin: 1rem 0 0.4rem; }
-  .stat-row { display: flex; justify-content: space-between; padding: 0.25rem 0; font-size: 0.8rem; }
-  .stat-label { color: #888; }
-  .stat-value { color: #222; font-weight: 600; }
-  .desktop-progress { height: 5px; background: #e5e5e3; border-radius: 3px; margin: 0.6rem 0; overflow: hidden; display: flex; }
-  .desktop-progress .seg-correct { background: #22c55e; }
-  .desktop-progress .seg-wrong { background: #ef4444; }
-  .desktop-progress .seg-almost { background: #f59e0b; }
-  .desktop-progress .seg-nuance { background: #6366f1; }
-  .desktop-progress .seg-skip { background: #9ca3af; }
-  .desktop-progress .seg-unknown { background: #a78bfa; }
-  .missing-section { margin-top: 1.25rem; }
-  .missing-input { width: 100%; background: #fafaf8; border: 1px solid #e5e5e3; border-radius: 6px; color: #333; padding: 0.5rem; font-size: 0.8rem; font-family: inherit; resize: vertical; min-height: 70px; }
-  .missing-input:focus { border-color: #6366f1; outline: none; box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.15); }
-  .missing-input::placeholder { color: #bbb; }
-  .export-btn { width: 100%; margin-top: 1.25rem; background: #111; border: 1px solid #111; color: #fff; padding: 0.55rem; border-radius: 6px; font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: background 0.2s; }
-  .export-btn:hover { background: #333; }
-  .export-btn:disabled { background: #e5e5e3; border-color: #e5e5e3; color: #bbb; cursor: not-allowed; }
-  .keyboard-hint { color: #bbb; font-size: 0.65rem; margin-top: 0.5rem; text-align: center; }
+.notes { max-height: 0; overflow: hidden; opacity: 0; transition: max-height 0.25s ease, opacity 0.2s ease, margin 0.25s; }
+.notes--open { max-height: 200px; opacity: 1; margin-bottom: 8px; }
+.notes__lbl { display: block; font-family: var(--f-mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--fg-muted); margin-bottom: 8px; }
+.notes__ta { width: 100%; min-height: 76px; padding: 12px 14px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface); color: var(--fg); font-size: 13.5px; line-height: 1.5; resize: vertical; outline: none; transition: border-color 0.15s, box-shadow 0.15s; }
+.notes__ta:focus { border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in oklab, var(--accent) 18%, transparent); }
+.notes__ta::placeholder { color: var(--fg-faint); }
+
+.footnav { position: sticky; bottom: 0; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 14px 56px; background: linear-gradient(to bottom, transparent, var(--bg) 30%); max-width: 760px; margin: 0 auto; width: 100%; font-family: var(--f-mono); font-size: 11px; }
+.footnav__btn { padding: 6px 12px; border-radius: 6px; color: var(--fg-soft); font-family: var(--f-mono); font-size: 11px; border: 1px solid var(--border); background: var(--surface); transition: all 0.12s; }
+.footnav__btn:hover:not(:disabled) { background: var(--surface-2); color: var(--fg); }
+.footnav__btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.footnav__hint { color: var(--fg-muted); }
+.footnav__hint b { color: var(--accent); font-weight: 600; }
+
+.rail { border-left: 1px solid var(--border); background: var(--bg-soft); padding: 24px; overflow-y: auto; display: flex; flex-direction: column; gap: 24px; scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
+.rail__hd { display: flex; flex-direction: column; gap: 2px; }
+.rail__eyebrow { font-family: var(--f-mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.14em; color: var(--fg-muted); display: block; }
+.rail__big { font-family: var(--f-display); font-size: 56px; line-height: 1; font-weight: var(--hero-weight); letter-spacing: -0.03em; color: var(--fg); margin-top: 6px; font-variant-numeric: tabular-nums; }
+.rail__pct { font-size: 24px; color: var(--fg-muted); margin-left: 4px; font-weight: 400; }
+.rail__sub { color: var(--fg-muted); font-size: 12px; font-family: var(--f-mono); }
+.rail__progress { display: flex; height: 6px; border-radius: 3px; overflow: hidden; background: var(--surface-2); gap: 1px; }
+.rail__seg { height: 100%; }
+.rail__seg--correct { background: var(--c-correct); }
+.rail__seg--wrong   { background: var(--c-wrong); }
+.rail__seg--almost  { background: var(--c-almost); }
+.rail__seg--nuance  { background: var(--c-nuance); }
+.rail__seg--unknown { background: var(--c-unknown); }
+.rail__seg--skip    { background: var(--c-skip); }
+.rail__seg--unrated { background: transparent; }
+.rail__stats { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--border-soft); border: 1px solid var(--border-soft); border-radius: 8px; overflow: hidden; }
+.rail__stat { background: var(--surface); padding: 10px 12px; display: flex; flex-direction: column; gap: 2px; transition: background 0.15s; }
+.rail__stat.is-empty { opacity: 0.5; }
+.rail__stat dt { font-family: var(--f-mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--fg-muted); }
+.rail__stat dd { font-family: var(--f-display); font-size: 22px; font-weight: var(--hero-weight); font-variant-numeric: tabular-nums; letter-spacing: -0.02em; }
+.rail__stat--correct dd { color: var(--c-correct); }
+.rail__stat--wrong   dd { color: var(--c-wrong); }
+.rail__stat--almost  dd { color: var(--c-almost); }
+.rail__stat--nuance  dd { color: var(--c-nuance); }
+.rail__stat--unknown dd { color: var(--c-unknown); }
+.rail__stat--skip    dd { color: var(--c-skip); }
+.rail__stat.is-empty dd { color: var(--fg-faint); }
+.rail__missing { display: flex; flex-direction: column; gap: 8px; }
+.rail__ta { width: 100%; min-height: 90px; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface); color: var(--fg); font-size: 12.5px; line-height: 1.5; font-family: var(--f-body); resize: vertical; outline: none; }
+.rail__ta:focus { border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in oklab, var(--accent) 15%, transparent); }
+.rail__ta::placeholder { color: var(--fg-faint); }
+.rail__export { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 16px; background: var(--fg); color: var(--bg); border-radius: 8px; font-size: 13px; font-weight: 500; transition: opacity 0.15s, transform 0.1s; margin-top: 4px; }
+.rail__export:hover { opacity: 0.92; }
+.rail__export:active { transform: scale(0.98); }
+.rail__export-icon { font-size: 15px; }
+.rail__kbd { list-style: none; display: flex; flex-direction: column; gap: 6px; padding-top: 16px; border-top: 1px solid var(--border-soft); }
+.rail__kbd li { display: flex; align-items: center; gap: 6px; font-family: var(--f-mono); font-size: 11px; color: var(--fg-muted); }
+.rail__kbd li span { margin-left: 6px; }
+
+@media (max-width: 1280px) { :root { --rail-w: 280px; } .focused { padding: 28px 36px 32px; } .footnav { padding: 14px 36px; } }
+@media (max-width: 1080px) { .body { grid-template-columns: 240px 1fr; } .rail { display: none; } }
+
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--fg-faint); }
 </style>
 </head>
 <body>
-
-<div class="header">
-  <h1>Align — <span id="h-context">{{CONTEXT}}</span></h1>
-  <div class="meta">
-    <span id="h-date">{{DATE}}</span>
-    <span class="tag tag-src" id="h-count">0 claims</span>
-    <span class="tag tag-src" id="h-source">{{SOURCE}}</span>
-    <span class="tag tag-acc" id="h-accuracy" style="display:none"></span>
-  </div>
-  <button class="header-download" id="g-export" onclick="exportMd()">⤓ Download .md</button>
-</div>
 <input type="hidden" id="contextSlug" value="{{CONTEXT_SLUG}}">
 
-<!-- Mobile: sticky summary bar -->
-<div class="summary-bar">
-  <span class="v" id="m-rated">0</span><span class="s">rated</span>
-  <div class="progress-bar" id="m-progress"></div>
-  <span class="v" id="m-accuracy">--</span>
-</div>
-
-<div id="m-alerts"></div>
-
-<div class="container">
-  <div class="claims-panel" id="claims"></div>
-
-  <!-- Desktop: side panel -->
-  <div class="summary-panel">
-    <h2>Review</h2>
-    <div class="stat-row"><span class="stat-label">Total</span><span class="stat-value" id="s-total">0</span></div>
-    <div class="stat-row"><span class="stat-label">Rated</span><span class="stat-value" id="s-rated">0</span></div>
-    <div class="desktop-progress" id="d-progress"></div>
-    <div class="stat-row"><span class="stat-label">Correct</span><span class="stat-value" id="s-correct" style="color:#16a34a">0</span></div>
-    <div class="stat-row"><span class="stat-label">Wrong</span><span class="stat-value" id="s-wrong" style="color:#dc2626">0</span></div>
-    <div class="stat-row"><span class="stat-label">Almost</span><span class="stat-value" id="s-almost" style="color:#d97706">0</span></div>
-    <div class="stat-row"><span class="stat-label">Nuance</span><span class="stat-value" id="s-nuance" style="color:#4f46e5">0</span></div>
-    <div class="stat-row"><span class="stat-label">Skip</span><span class="stat-value" id="s-skip" style="color:#9ca3af">0</span></div>
-    <div class="stat-row"><span class="stat-label">Can't verify</span><span class="stat-value" id="s-unknown" style="color:#7c3aed">0</span></div>
-    <h3>Accuracy</h3>
-    <div class="stat-row"><span class="stat-label">Score</span><span class="stat-value" id="s-accuracy">--</span></div>
-    <div id="d-alerts"></div>
-    <div class="missing-section">
-      <h3>Missing — not captured</h3>
-      <textarea class="missing-input" id="d-missing" placeholder="What happened that wasn't captured? One item per line."></textarea>
+<div class="app">
+  <header class="topbar">
+    <div class="topbar__brand">
+      <span class="topbar__mark" aria-hidden>◴</span>
+      <span class="topbar__name">align</span>
+      <span class="topbar__ctx">{{CONTEXT}}</span>
     </div>
-    <button class="export-btn" id="d-export" onclick="exportMd()">Download align.md</button>
-    <div class="keyboard-hint">↑↓ navigate · 1-6 rate · E expand · N notes</div>
-  </div>
-</div>
+    <div class="topbar__meta" id="topbar-meta"></div>
+    <button class="topbar__dl" id="dl-top"><span>Export</span><span aria-hidden>↓</span></button>
+  </header>
 
-<!-- Mobile: FABs -->
-<div class="fab-row">
-  <button class="fab fab-add" onclick="toggleSheet()">+</button>
-  <button class="fab fab-export" id="m-export" onclick="exportMd()">&#x2913;</button>
-</div>
+  <div class="body">
+    <nav class="sidebar">
+      <div class="sidebar__hd">
+        <span class="sidebar__eyebrow">Claims</span>
+        <span class="sidebar__count" id="sidebar-count">0/0</span>
+      </div>
+      <div class="sidebar__list" id="sidebar-list"></div>
+    </nav>
 
-<!-- Mobile: bottom sheet for missing items -->
-<div class="bottom-sheet" id="sheet">
-  <h3>Missing — not captured</h3>
-  <textarea id="m-missing" placeholder="What happened that wasn't captured? One per line."></textarea>
-  <div class="sheet-actions">
-    <button class="sheet-btn sheet-btn-close" onclick="toggleSheet()">Close</button>
-    <button class="sheet-btn sheet-btn-save" onclick="toggleSheet()">Done</button>
+    <main class="main" id="main-pane">
+      <div id="focused-container"></div>
+      <nav class="footnav" id="footnav"></nav>
+    </main>
+
+    <aside class="rail">
+      <div class="rail__hd">
+        <span class="rail__eyebrow">Review</span>
+        <span class="rail__big" id="rail-big">–<span class="rail__pct">%</span></span>
+        <span class="rail__sub" id="rail-sub">accuracy across 0 rated</span>
+      </div>
+      <div class="rail__progress" id="rail-progress"></div>
+      <dl class="rail__stats" id="rail-stats"></dl>
+      <div class="rail__missing">
+        <label class="rail__eyebrow" for="missing">Missing — not captured</label>
+        <textarea id="missing" class="rail__ta" placeholder="What happened that no source caught?"></textarea>
+      </div>
+      <button class="rail__export" id="dl-rail">
+        <span>Download align.md</span>
+        <span class="rail__export-icon" aria-hidden>↓</span>
+      </button>
+      <ul class="rail__kbd">
+        <li><kbd>↑</kbd><kbd>↓</kbd><span>navigate</span></li>
+        <li><kbd>1</kbd>–<kbd>6</kbd><span>rate</span></li>
+        <li><kbd>N</kbd><span>notes</span></li>
+        <li><kbd>E</kbd><span>expand detail</span></li>
+      </ul>
+    </aside>
   </div>
 </div>
 
 <script>
-// ══════════════════════════════════════════════════════════════
-// ALIGN TEMPLATE v0.4.1
-// v0.4.1 (2026-05-20): always-visible header Download button
-//   (#g-export), present on every screen width and always enabled.
-//   Export controls no longer disable until a claim is rated.
-//   Driven by the team-lineup /align session — the download
-//   control was not discoverable.
-// Source-agnostic correction form. Claims are injected as a JS
-// array by the /align skill. Each claim has:
-//   id, text, source, detail (optional), time (optional),
-//   categories (optional), files (optional), link (optional),
-//   verifiable (optional, boolean — false = machine-only evidence)
-// ══════════════════════════════════════════════════════════════
+// Preset / accent / etc. — overridable at template-render time via window.PREFS, or by localStorage.
+window.PREFS = Object.assign({
+  preset: 'editorial',
+  accent: '#b56a3e',
+  ratingStyle: 'labeled',
+  density: 'comfy',
+  autoAdvance: true
+}, JSON.parse(localStorage.getItem('alignPrefs') || '{}'));
+document.documentElement.dataset.preset = window.PREFS.preset;
+document.documentElement.dataset.density = window.PREFS.density;
+document.documentElement.style.setProperty('--accent', window.PREFS.accent);
 
-// ── Claims array — populated by skill ──
+const RATINGS = ['correct', 'wrong', 'almost', 'nuance', 'unknown', 'skip'];
+const R_META = {
+  correct: { label: 'Correct',      emoji: '✓', letter: 'C', key: '1' },
+  wrong:   { label: 'Wrong',        emoji: '✕', letter: 'W', key: '2' },
+  almost:  { label: 'Almost',       emoji: '◐', letter: 'A', key: '3' },
+  nuance:  { label: 'Nuance',       emoji: '◍', letter: 'N', key: '4' },
+  unknown: { label: "Can't verify", emoji: '?', letter: '?', key: '5' },
+  skip:    { label: 'Skip',         emoji: '–', letter: 'S', key: '6' },
+};
+const KEY_TO_RATING = Object.fromEntries(RATINGS.map(r => [R_META[r].key, r]));
+const ICON_GLYPH = { calendar: '◷', gmail: '✉', slack: '#', fireflies: '◉', drive: '▤', fabric: '◇', rhythm: '♪', briefing: '☱' };
+
 // {{CLAIMS_INJECT}}
-// The skill replaces the line below with: const claims = [...];
 const claims = [];
 
-// ── Constants ──
-const RATINGS = ['correct', 'wrong', 'almost', 'nuance', 'unknown', 'skip'];
-const R_LABELS = { correct: '✅', wrong: '❌', almost: '🟡', nuance: '🔵', unknown: '🤷', skip: '⏭️' };
-const R_NAMES = { correct: 'Correct', wrong: 'Wrong', almost: 'Almost', nuance: 'Nuance', unknown: "Can't verify", skip: 'Skip' };
-const R_KEYS = { '1': 'correct', '2': 'wrong', '3': 'almost', '4': 'nuance', '5': 'unknown', '6': 'skip' };
-const ICON_MAP = { calendar: '📅', gmail: '📧', slack: '💬', fireflies: '🎙️', drive: '📁', fabric: '🧵', rhythm: '🥁', commitment: '🤝', briefing: '📋' };
-
-// Revisit-ratings banner: nudge the user to re-grade earlier claims as criteria sharpen.
-// EvalGen's criteria-drift finding (Shankar et al., UIST 2024) — users refine criteria
-// while grading and often want to revisit earlier ratings. Thresholds re-nudge at coarse
-// intervals; dismiss persists per-tier until the next tier fires.
-const REVISIT_THRESHOLDS = [5, 10, 20, 50];
-let revisitDismissedTier = 0;
+claims.forEach(c => {
+  if (c.verifiable === false && !c.rating) c.rating = 'unknown';
+  if (typeof c.notes !== 'string') c.notes = '';
+});
 
 let focused = 0;
+let missing = '';
 
-// ── Init ──
-function init() {
-  claims.forEach((c, i) => {
-    c._idx = i;
-    c.notes = c.notes || '';
-    c._expanded = false;
-    // Pre-tag machine-only claims as "can't verify"
-    if (c.verifiable === false) {
-      c.rating = c.rating || 'unknown';
-    } else {
-      c.rating = c.rating || null;
-    }
-  });
-  document.getElementById('h-count').textContent = claims.length + ' claims';
-  document.getElementById('s-total').textContent = claims.length;
-  render();
-  updateSummary();
-}
-
-// ── Render claims ──
-function render() {
-  const panel = document.getElementById('claims');
-  panel.textContent = '';
-
-  claims.forEach((c, i) => {
-    const card = document.createElement('div');
-    card.className = 'claim'
-      + (c.rating ? ' rated ' + c.rating : '')
-      + (c._expanded ? ' expanded' : '')
-      + (i === focused ? ' focused' : '');
-    card.id = 'c-' + i;
-
-    // Main content (clickable to expand)
-    const main = document.createElement('div');
-    main.className = 'claim-main';
-    main.onclick = () => { c._expanded = !c._expanded; focused = i; render(); };
-
-    // Header row: id/time + source
-    const header = document.createElement('div');
-    header.className = 'claim-header';
-    const idEl = document.createElement('span');
-    idEl.className = c.time ? 'claim-time' : 'claim-id';
-    idEl.textContent = c.time || ('Claim ' + c.id);
-    header.appendChild(idEl);
-    if (c.verifiable === false) {
-      const badge = document.createElement('span');
-      badge.className = 'badge-machine';
-      badge.textContent = 'machine-only';
-      badge.title = 'This claim is sourced from data only Claude can see (filesystem, smart-memory, inference). Pre-rated as "can\'t verify" — override if you happen to know.';
-      header.appendChild(badge);
-    }
-    if (c.source) {
-      const srcEl = document.createElement('span');
-      srcEl.className = 'claim-id';
-      srcEl.textContent = c.source;
-      srcEl.style.color = '#8b949e';
-      header.appendChild(srcEl);
-    }
-    main.appendChild(header);
-
-    // Claim text
-    const text = document.createElement('div');
-    text.className = 'claim-text';
-    const icon = c.icon ? (ICON_MAP[c.icon] || '') + ' ' : '';
-    text.textContent = icon + c.text;
-    main.appendChild(text);
-
-    // Optional description (below claim text, lighter)
-    if (c.desc) {
-      const desc = document.createElement('div');
-      desc.className = 'claim-source';
-      desc.textContent = c.desc;
-      main.appendChild(desc);
-    }
-
-    // Tags (categories + files)
-    if ((c.categories && c.categories.length) || (c.files && c.files.length)) {
-      const tags = document.createElement('div');
-      tags.className = 'claim-tags';
-      (c.categories || []).forEach(cat => {
-        const t = document.createElement('span');
-        t.className = 'tag tag-cat';
-        t.textContent = cat;
-        tags.appendChild(t);
-      });
-      (c.files || []).forEach(f => {
-        const t = document.createElement('span');
-        t.className = 'tag tag-file';
-        t.textContent = f;
-        tags.appendChild(t);
-      });
-      main.appendChild(tags);
-    }
-    card.appendChild(main);
-
-    // Expandable detail
-    if (c.detail || c.attendees || c.link) {
-      const detail = document.createElement('div');
-      detail.className = 'claim-detail';
-      if (c.detail) {
-        const lbl = document.createElement('div'); lbl.className = 'detail-label'; lbl.textContent = 'Full content'; detail.appendChild(lbl);
-        const cnt = document.createElement('div'); cnt.className = 'detail-content'; cnt.textContent = c.detail; detail.appendChild(cnt);
-      }
-      if (c.attendees) {
-        const lbl = document.createElement('div'); lbl.className = 'detail-label'; lbl.textContent = 'Attendees'; detail.appendChild(lbl);
-        const cnt = document.createElement('div'); cnt.className = 'detail-content'; cnt.textContent = c.attendees; detail.appendChild(cnt);
-      }
-      if (c.link) {
-        const a = document.createElement('a'); a.className = 'detail-link'; a.textContent = 'Open source ↗';
-        try { const u = new URL(c.link); if (u.protocol === 'https:' || u.protocol === 'http:') a.href = c.link; } catch (e) {}
-        a.target = '_blank'; a.rel = 'noopener noreferrer'; detail.appendChild(a);
-      }
-      card.appendChild(detail);
-    }
-
-    // Rating buttons
-    const controls = document.createElement('div');
-    controls.className = 'claim-controls';
-    RATINGS.forEach(r => {
-      const btn = document.createElement('button');
-      btn.className = 'r-btn' + (c.rating === r ? ' sel-' + r : '');
-      btn.textContent = R_LABELS[r];
-      btn.title = R_NAMES[r] + ' (' + (RATINGS.indexOf(r) + 1) + ')';
-      btn.onclick = (e) => { e.stopPropagation(); rate(i, r); };
-      controls.appendChild(btn);
-    });
-    card.appendChild(controls);
-
-    // Notes (visible for wrong/almost/nuance)
-    const notes = document.createElement('div');
-    notes.className = 'claim-notes' + (c.rating && c.rating !== 'correct' && c.rating !== 'skip' && c.rating !== 'unknown' ? ' visible' : '');
-    const ta = document.createElement('textarea');
-    ta.placeholder = "What's the real story?";
-    ta.value = c.notes;
-    ta.oninput = (e) => { c.notes = e.target.value; };
-    ta.onclick = (e) => e.stopPropagation();
-    ta.id = 'notes-' + i;
-    notes.appendChild(ta);
-    card.appendChild(notes);
-
-    panel.appendChild(card);
-  });
-}
-
-// ── Rate a claim ──
-function rate(idx, rating) {
-  claims[idx].rating = claims[idx].rating === rating ? null : rating;
-  if (claims[idx].rating && idx < claims.length - 1) focused = idx + 1;
-  render();
-  updateSummary();
-  if (claims[idx].rating) {
-    const next = document.getElementById('c-' + focused);
-    if (next) next.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-  }
-}
-
-// ── Update summary stats ──
-function updateSummary() {
+function compute() {
   const counts = { correct: 0, wrong: 0, almost: 0, nuance: 0, unknown: 0, skip: 0 };
-  let unrated = 0;
-  claims.forEach(c => { if (c.rating) counts[c.rating]++; else unrated++; });
-  const rated = claims.length - unrated;
+  claims.forEach(c => { if (c.rating) counts[c.rating]++; });
+  const rated = RATINGS.reduce((a, r) => a + counts[r], 0);
   const scoreable = rated - counts.skip - counts.unknown;
-  const accuracy = scoreable > 0 ? Math.round(counts.correct / scoreable * 100) + '%' : '--';
+  const accuracy = scoreable > 0 ? Math.round(counts.correct / scoreable * 100) : null;
+  return { counts, rated, accuracy };
+}
 
-  // Desktop panel
-  document.getElementById('s-rated').textContent = rated + ' / ' + claims.length;
-  document.getElementById('s-correct').textContent = counts.correct;
-  document.getElementById('s-wrong').textContent = counts.wrong;
-  document.getElementById('s-almost').textContent = counts.almost;
-  document.getElementById('s-nuance').textContent = counts.nuance;
-  document.getElementById('s-skip').textContent = counts.skip;
-  document.getElementById('s-unknown').textContent = counts.unknown;
-  document.getElementById('s-accuracy').textContent = accuracy;
-
-  // Mobile bar
-  document.getElementById('m-rated').textContent = rated;
-  document.getElementById('m-accuracy').textContent = accuracy;
-
-  // Header accuracy tag
-  const accTag = document.getElementById('h-accuracy');
-  if (rated > 0) { accTag.style.display = 'inline-block'; accTag.textContent = accuracy + ' accuracy'; }
-  else { accTag.style.display = 'none'; }
-
-  // Progress bars
-  function fillBar(el) {
-    el.textContent = '';
-    RATINGS.forEach(r => {
-      if (counts[r] > 0) {
-        const seg = document.createElement('div');
-        seg.className = 'seg-' + r;
-        seg.style.width = (counts[r] / claims.length * 100) + '%';
-        el.appendChild(seg);
-      }
-    });
+function el(tag, props, children) {
+  const e = document.createElement(tag);
+  if (props) for (const k in props) {
+    if (k === 'class') e.className = props[k];
+    else if (k === 'on') { for (const ev in props.on) e.addEventListener(ev, props.on[ev]); }
+    else if (k === 'text') e.textContent = props[k];
+    else if (k === 'style') { for (const s in props.style) e.style[s] = props.style[s]; }
+    else if (k === 'data') { for (const d in props.data) e.dataset[d] = props.data[d]; }
+    else if (k.startsWith('aria-') || k === 'role' || k === 'title' || k === 'href' || k === 'target' || k === 'rel' || k === 'id' || k === 'placeholder' || k === 'value' || k === 'for' || k === 'disabled' || k === 'type') {
+      if (k === 'disabled' && !props[k]) {} else e.setAttribute(k, props[k]);
+    } else e[k] = props[k];
   }
-  fillBar(document.getElementById('m-progress'));
-  fillBar(document.getElementById('d-progress'));
+  if (Array.isArray(children)) children.forEach(c => c != null && e.append(c));
+  else if (children != null) e.append(children);
+  return e;
+}
+function clear(node) { while (node.firstChild) node.removeChild(node.firstChild); }
 
-  // Pattern alerts + revisit-ratings banner
-  const activeRevisitTier = REVISIT_THRESHOLDS.slice().reverse().find(t => rated >= t);
-  ['m-alerts', 'd-alerts'].forEach(id => {
-    const el = document.getElementById(id);
-    el.textContent = '';
-    if (counts.wrong >= 3) {
-      const alert = document.createElement('div');
-      alert.className = 'pattern-alert';
-      alert.innerHTML = '<strong>Pattern:</strong> ' + counts.wrong + ' wrong claims. Check notes for systematic cause.';
-      el.appendChild(alert);
+function renderTopbarMeta(rated, accuracy) {
+  const root = document.getElementById('topbar-meta');
+  clear(root);
+  root.append(
+    el('span', { text: '{{DATE}}' }),
+    el('span', { class: 'topbar__sep', text: '·' }),
+    el('span', { text: claims.length + ' claims' }),
+    el('span', { class: 'topbar__sep', text: '·' }),
+    el('span', null, [el('b', { text: String(rated) }), document.createTextNode('/' + claims.length + ' rated')])
+  );
+  if (accuracy !== null) {
+    root.append(
+      el('span', { class: 'topbar__sep', text: '·' }),
+      el('span', { class: 'topbar__acc' }, [el('b', { text: accuracy + '%' }), document.createTextNode(' accuracy')])
+    );
+  }
+}
+
+function renderRow(claim, i) {
+  const cls = ['row'];
+  if (i === focused) cls.push('row--focused');
+  if (claim.rating) cls.push('row--rated', 'row--' + claim.rating);
+  return el('button', {
+    class: cls.join(' '),
+    id: 'row-' + i,
+    on: { click: () => { focused = i; render(); } }
+  }, [
+    el('span', { class: 'row__num', text: String(i + 1).padStart(2, '0') }),
+    el('span', { class: 'row__icon', 'aria-hidden': 'true', text: ICON_GLYPH[claim.icon] || '·' }),
+    el('span', { class: 'row__text', text: claim.text }),
+    el('span', { class: 'row__dot', 'aria-hidden': 'true', text: claim.rating ? R_META[claim.rating].emoji : '' })
+  ]);
+}
+
+function renderFocused(claim, i) {
+  const total = claims.length;
+  const article = el('article', { class: 'focused' });
+
+  const hdr = el('header', { class: 'focused__hd' });
+  hdr.append(
+    el('span', { class: 'focused__counter' }, [
+      el('span', { class: 'num', text: String(i + 1).padStart(2, '0') }),
+      el('span', { class: 'sep', text: '/' }),
+      el('span', { class: 'tot', text: String(total).padStart(2, '0') })
+    ]),
+    el('span', { class: 'focused__src' }, [
+      el('span', { class: 'focused__src-icon', 'aria-hidden': 'true', text: ICON_GLYPH[claim.icon] || '·' }),
+      document.createTextNode(claim.source || ''),
+      claim.time ? el('span', { class: 'focused__time', text: '· ' + claim.time }) : null
+    ])
+  );
+  if (claim.verifiable === false) {
+    hdr.append(el('span', { class: 'badge-machine', title: "Machine-only evidence — pre-rated as can't verify.", text: 'machine-only' }));
+  }
+  article.append(hdr);
+
+  article.append(el('h2', { class: 'focused__claim', text: claim.text }));
+  if (claim.desc) article.append(el('p', { class: 'focused__desc', text: claim.desc }));
+  if (claim.detail) article.append(el('pre', { class: 'focused__detail', text: claim.detail }));
+
+  const hasTags = (claim.categories && claim.categories.length) || (claim.files && claim.files.length) || claim.link;
+  if (hasTags) {
+    const tags = el('div', { class: 'focused__tags' });
+    (claim.categories || []).forEach(c => tags.append(el('span', { class: 'tag tag--cat', text: c })));
+    (claim.files || []).forEach(f => tags.append(el('span', { class: 'tag tag--file', text: f })));
+    if (claim.link) {
+      const a = el('a', { class: 'tag tag--link', text: 'open source ↗', target: '_blank', rel: 'noopener noreferrer' });
+      try {
+        const u = new URL(claim.link);
+        if (u.protocol === 'https:' || u.protocol === 'http:') a.setAttribute('href', claim.link);
+      } catch (e) { /* invalid URL — no href set */ }
+      tags.append(a);
     }
-    if (activeRevisitTier && activeRevisitTier > revisitDismissedTier) {
-      const banner = document.createElement('div');
-      banner.className = 'revisit-banner';
-      banner.innerHTML = '<strong>Revisit:</strong> <span>' + activeRevisitTier + ' rated. Criteria sharpen as you grade — click any prior claim to re-rate.</span>' +
-        '<button class="dismiss" onclick="dismissRevisit(' + activeRevisitTier + ')">Dismiss</button>';
-      el.appendChild(banner);
-    }
+    article.append(tags);
+  }
+
+  const rb = el('div', { class: 'rate rate--' + window.PREFS.ratingStyle, role: 'radiogroup', 'aria-label': 'Rate this claim' });
+  RATINGS.forEach(r => {
+    const meta = R_META[r];
+    const sel = claim.rating === r;
+    const btn = el('button', {
+      class: 'rate__btn' + (sel ? ' rate__btn--sel rate__btn--' + r : ''),
+      role: 'radio',
+      'aria-checked': String(sel),
+      title: meta.label + ' (' + meta.key + ')',
+      on: { click: (e) => { e.stopPropagation(); rate(r); } }
+    });
+    btn.append(el('span', { class: 'rate__key', 'aria-hidden': 'true', text: meta.key }));
+    if (window.PREFS.ratingStyle === 'labeled') btn.append(el('span', { class: 'rate__lbl', text: meta.label }));
+    else if (window.PREFS.ratingStyle === 'emoji') btn.append(el('span', { class: 'rate__glyph', text: meta.emoji }));
+    else if (window.PREFS.ratingStyle === 'letter') btn.append(el('span', { class: 'rate__glyph rate__glyph--letter', text: meta.letter }));
+    rb.append(btn);
+  });
+  article.append(rb);
+
+  const showNotes = ['wrong', 'almost', 'nuance'].includes(claim.rating);
+  const notesBox = el('div', { class: 'notes' + (showNotes ? ' notes--open' : '') });
+  const labelText = claim.rating === 'wrong' ? "What's the real story?"
+    : claim.rating === 'almost' ? "What's missing or off?"
+    : claim.rating === 'nuance' ? 'What nuance is missing?' : 'Notes';
+  notesBox.append(el('label', { class: 'notes__lbl', for: 'notes-ta', text: labelText }));
+  const ta = el('textarea', { class: 'notes__ta', id: 'notes-ta', placeholder: 'Add reality, evidence, or context…' });
+  ta.value = claim.notes || '';
+  ta.addEventListener('input', (e) => { claim.notes = e.target.value; });
+  notesBox.append(ta);
+  article.append(notesBox);
+
+  return article;
+}
+
+function renderFootnav() {
+  const root = document.getElementById('footnav');
+  clear(root);
+  const cur = claims[focused];
+  const hint = el('span', { class: 'footnav__hint' });
+  if (cur && cur.rating) {
+    hint.append(document.createTextNode('rated '), el('b', { text: R_META[cur.rating].label.toLowerCase() }));
+  } else {
+    hint.textContent = 'press 1–6 to rate';
+  }
+  const prev = el('button', {
+    class: 'footnav__btn',
+    disabled: focused === 0 ? '' : null,
+    on: { click: () => { focused = Math.max(0, focused - 1); render(); } }
+  }, [el('span', { 'aria-hidden': 'true', text: '←' }), document.createTextNode(' previous')]);
+  if (focused === 0) prev.disabled = true;
+  const next = el('button', {
+    class: 'footnav__btn',
+    disabled: focused === claims.length - 1 ? '' : null,
+    on: { click: () => { focused = Math.min(claims.length - 1, focused + 1); render(); } }
+  }, [document.createTextNode('next '), el('span', { 'aria-hidden': 'true', text: '→' })]);
+  if (focused === claims.length - 1) next.disabled = true;
+  root.append(prev, hint, next);
+}
+
+function renderRail() {
+  const { counts, rated, accuracy } = compute();
+
+  const big = document.getElementById('rail-big');
+  big.innerHTML = '';
+  big.append(document.createTextNode(accuracy !== null ? String(accuracy) : '–'));
+  big.append(el('span', { class: 'rail__pct', text: '%' }));
+
+  document.getElementById('rail-sub').textContent = 'accuracy across ' + rated + ' rated';
+
+  const prog = document.getElementById('rail-progress');
+  clear(prog);
+  RATINGS.forEach(r => {
+    if (counts[r] > 0) prog.append(el('span', {
+      class: 'rail__seg rail__seg--' + r,
+      style: { flex: counts[r] },
+      title: R_META[r].label + ': ' + counts[r]
+    }));
+  });
+  const unrated = claims.length - rated;
+  if (unrated > 0) prog.append(el('span', { class: 'rail__seg rail__seg--unrated', style: { flex: unrated }, title: 'Unrated: ' + unrated }));
+
+  const stats = document.getElementById('rail-stats');
+  clear(stats);
+  RATINGS.forEach(r => {
+    const wrap = el('div', { class: 'rail__stat rail__stat--' + r + (counts[r] === 0 ? ' is-empty' : '') });
+    wrap.append(el('dt', { text: R_META[r].label }), el('dd', { text: String(counts[r]) }));
+    stats.append(wrap);
   });
 
-  // Export controls stay enabled at all times — the Download button is never gated.
+  return { counts, rated, accuracy };
 }
 
-// ── Revisit-ratings banner dismiss ──
-function dismissRevisit(tier) {
-  revisitDismissedTier = tier;
-  updateSummary();
+function render() {
+  const sideList = document.getElementById('sidebar-list');
+  clear(sideList);
+  claims.forEach((c, i) => sideList.append(renderRow(c, i)));
+
+  const focCt = document.getElementById('focused-container');
+  clear(focCt);
+  if (claims.length) focCt.append(renderFocused(claims[focused], focused));
+
+  const { rated, accuracy } = renderRail();
+  document.getElementById('sidebar-count').textContent = rated + '/' + claims.length;
+  renderTopbarMeta(rated, accuracy);
+  renderFootnav();
+
+  const fr = document.getElementById('row-' + focused);
+  if (fr) fr.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  const mp = document.getElementById('main-pane');
+  if (mp) mp.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-// ── Toggle missing sheet (mobile) ──
-function toggleSheet() {
-  document.getElementById('sheet').classList.toggle('open');
+function rate(r) {
+  const c = claims[focused];
+  if (!c) return;
+  c.rating = c.rating === r ? null : r;
+  if (c.rating && window.PREFS.autoAdvance) {
+    setTimeout(() => {
+      const n = claims.length;
+      for (let step = 1; step <= n; step++) {
+        const k = (focused + step) % n;
+        if (!claims[k].rating) { focused = k; render(); return; }
+      }
+      focused = Math.min(focused + 1, n - 1);
+      render();
+    }, 120);
+  } else {
+    render();
+  }
 }
 
-// ── Export corrections as align-{context}-{date}.md ──
+document.addEventListener('keydown', (e) => {
+  if (e.target.tagName === 'TEXTAREA' || e.target.tagName === 'INPUT') {
+    if (e.key === 'Escape') e.target.blur();
+    return;
+  }
+  if (e.metaKey || e.ctrlKey || e.altKey) return;
+  if (KEY_TO_RATING[e.key]) { e.preventDefault(); rate(KEY_TO_RATING[e.key]); return; }
+  if (e.key === 'ArrowDown' || e.key === 'j') { e.preventDefault(); focused = Math.min(focused + 1, claims.length - 1); render(); }
+  else if (e.key === 'ArrowUp' || e.key === 'k') { e.preventDefault(); focused = Math.max(focused - 1, 0); render(); }
+  else if (e.key === 'n' || e.key === 'N') {
+    e.preventDefault();
+    const ta = document.getElementById('notes-ta');
+    if (ta) ta.focus();
+  }
+});
+
+document.getElementById('missing').addEventListener('input', (e) => { missing = e.target.value; });
+
 function exportMd() {
-  const date = document.getElementById('h-date').textContent;
-  const context = document.getElementById('h-context').textContent;
-  const source = document.getElementById('h-source').textContent;
+  const date = '{{DATE}}';
+  const context = '{{CONTEXT}}';
+  const source = '{{SOURCE}}';
   const ctxSlug = document.getElementById('contextSlug').value || 'session';
-
-  const statusMap = { correct: '✅ Correct', wrong: '❌ Wrong', almost: '🔶 Almost', nuance: '🔷 Needs nuance', unknown: '🤷 Can\'t verify', irrelevant: '➖ Irrelevant', skip: '⬜ Skipped' };
+  const statusMap = {
+    correct: '✅ Correct', wrong: '❌ Wrong', almost: '🔶 Almost',
+    nuance: '🔷 Needs nuance', unknown: "🤷 Can't verify", irrelevant: '➖ Irrelevant', skip: '⬜ Skipped'
+  };
   const counts = { correct: 0, wrong: 0, almost: 0, nuance: 0, unknown: 0, irrelevant: 0, skip: 0, unrated: 0 };
   claims.forEach(c => { if (c.rating) counts[c.rating]++; else counts.unrated++; });
+
+  const tz = '{{TIMEZONE}}';
+  const tzOpts = (tz && !tz.startsWith('{{')) ? { timeZone: tz } : {};
 
   let md = '# Alignment Feedback — ' + date + '\n';
   md += 'Context: ' + context + '\n';
   md += 'Source: ' + source + '\n';
-  // Timezone resolution: the skill substitutes {{TIMEZONE}} with an IANA name (e.g.,
-  // "Europe/Athens") to lock the timestamp to a specific zone. If the placeholder is
-  // left unsubstituted (or is empty), fall back to the browser's local timezone — a
-  // safe default for users who haven't configured one.
-  const tz = '{{TIMEZONE}}';
-  const tzOpts = (tz && !tz.startsWith('{{')) ? { timeZone: tz } : {};
   md += 'Generated: ' + new Date().toLocaleString('en-GB', tzOpts) + '\n\n';
 
-  // Summary table
-  md += '## Summary\n';
-  md += '| Status | Count |\n|--------|-------|\n';
-  Object.entries(counts).forEach(([k, v]) => {
-    if (v > 0) md += '| ' + (statusMap[k] || '⬜ ' + k) + ' | ' + v + ' |\n';
-  });
+  md += '## Summary\n| Status | Count |\n|--------|-------|\n';
+  Object.entries(counts).forEach(([k, v]) => { if (v > 0) md += '| ' + (statusMap[k] || '⬜ ' + k) + ' | ' + v + ' |\n'; });
   md += '\n';
 
-  // Corrections required
   const actionable = claims.filter(c => ['wrong', 'almost', 'nuance'].includes(c.rating));
-  if (actionable.length > 0) {
+  if (actionable.length) {
     md += '## Corrections Required\n\n';
     actionable.forEach(c => {
       md += '### Claim ' + c.id + ': ' + (statusMap[c.rating] || c.rating) + '\n';
@@ -531,9 +643,8 @@ function exportMd() {
     });
   }
 
-  // Confirmed / other
   const confirmed = claims.filter(c => c.rating && !['wrong', 'almost', 'nuance'].includes(c.rating));
-  if (confirmed.length > 0) {
+  if (confirmed.length) {
     md += '## Confirmed / Other\n\n';
     confirmed.forEach(c => {
       md += '- **Claim ' + c.id + '** ' + (statusMap[c.rating] || c.rating) + ': ' + c.text;
@@ -543,59 +654,29 @@ function exportMd() {
     md += '\n';
   }
 
-  // Missing items
-  const missingDesktop = (document.getElementById('d-missing') || {}).value || '';
-  const missingMobile = (document.getElementById('m-missing') || {}).value || '';
-  const missing = (missingDesktop.trim() || missingMobile.trim());
-  if (missing) {
+  const m = (missing || '').trim();
+  if (m) {
     md += '## Missing — Not Captured\n\n';
-    missing.split('\n').forEach(m => {
-      if (m.trim()) md += '- ' + m.trim() + '\n';
-    });
+    m.split('\n').forEach(line => { if (line.trim()) md += '- ' + line.trim() + '\n'; });
     md += '\n';
   }
 
-  md += '---\n*Feedback generated via /align. Apply corrections to TASKS.md, smart-memory, and future rhythm outputs.*\n';
+  md += '---\n*Feedback generated via /align. Apply corrections to TASKS.md, smart-memory, and future producer outputs.*\n';
 
-  // Download
   const blob = new Blob([md], { type: 'text/markdown' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
-  const dateSlug = date.replace(/[^0-9-]/g, '').replace(/^-+|-+$/g, '') || new Date().toISOString().slice(0, 10);
+  const dateSlug = (date || '').replace(/[^0-9-]/g, '').replace(/^-+|-+$/g, '') || new Date().toISOString().slice(0, 10);
   a.href = url;
   a.download = 'align-' + ctxSlug + '-' + dateSlug + '.md';
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
   URL.revokeObjectURL(url);
 }
 
-// ── Keyboard shortcuts (desktop) ──
-document.addEventListener('keydown', (e) => {
-  if (e.target.tagName === 'TEXTAREA' || e.target.tagName === 'INPUT') return;
+document.getElementById('dl-top').addEventListener('click', exportMd);
+document.getElementById('dl-rail').addEventListener('click', exportMd);
 
-  if (R_KEYS[e.key]) {
-    rate(focused, R_KEYS[e.key]);
-  } else if (e.key === 'ArrowDown' && focused < claims.length - 1) {
-    focused++;
-    render();
-    document.getElementById('c-' + focused).scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-  } else if (e.key === 'ArrowUp' && focused > 0) {
-    focused--;
-    render();
-    document.getElementById('c-' + focused).scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-  } else if (e.key === 'e' || e.key === 'E') {
-    claims[focused]._expanded = !claims[focused]._expanded;
-    render();
-  } else if (e.key === 'n' || e.key === 'N') {
-    const notes = document.getElementById('notes-' + focused);
-    if (notes) notes.focus();
-  }
-});
-
-// Auto-init
-document.addEventListener('DOMContentLoaded', init);
+render();
 </script>
-
 </body>
 </html>
