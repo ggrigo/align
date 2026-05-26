@@ -1,0 +1,47 @@
+name: Build .plugin on tag
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Verify plugin.json version matches tag
+        env:
+          TAG_REF: ${{ github.ref_name }}
+        run: |
+          TAG="${TAG_REF#v}"
+          MANIFEST_VERSION=$(jq -r .version .claude-plugin/plugin.json)
+          if [ "$TAG" != "$MANIFEST_VERSION" ]; then
+            echo "Tag $TAG_REF (= $TAG) does not match plugin.json version $MANIFEST_VERSION"
+            exit 1
+          fi
+          echo "Tag matches manifest: $TAG"
+
+      - name: Build .plugin zip
+        env:
+          TAG_REF: ${{ github.ref_name }}
+        run: |
+          NAME="align-${TAG_REF#v}.plugin"
+          zip -r "$NAME" . \
+            -x "*.git*" \
+            -x "*.github/*" \
+            -x "design-tokens/*" \
+            -x "*.DS_Store" \
+            -x "node_modules/*"
+          ls -lh "$NAME"
+          unzip -l "$NAME" | head -20
+
+      - name: Attach to release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: align-*.plugin
+          fail_on_unmatched_files: true
