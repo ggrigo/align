@@ -35,52 +35,61 @@ After 90 days, you have a calibrated corpus of your own taste — in your repo, 
 
 ## Install
 
-### Claude Code
+The repo doubles as its own single-plugin marketplace — same install path works for **both Claude Code and Cowork**.
+
+```
+/plugin marketplace add ggrigo/align
+/plugin install align@align
+```
+
+That's it. Updates land via `/plugin marketplace update align` then `/plugin install align@align` again.
+
+### Fallback: manual `.plugin` upload (Cowork)
+
+If you'd rather sideload, download `align-X.Y.Z.plugin` from the [Releases page](https://github.com/ggrigo/align/releases) and upload via Cowork → Settings → Plugins → Upload plugin.
+
+### Dev mode (Claude Code)
 
 ```bash
-# From a marketplace once published:
-/plugin install align@<marketplace>
-
-# Local install during dev:
 claude --plugin-dir /path/to/align
 ```
 
-### Cowork
-
-Upload the `.plugin` zip via the Cowork Plugins modal → "Upload plugin".
-
 ### Both surfaces consume the same artifact
 
-A `align/` directory with `.claude-plugin/plugin.json` at root works identically in Claude Code (loaded via `--plugin-dir` or marketplace install) and Cowork (zipped with `.plugin` extension and uploaded). No dual build.
+An `align/` directory with `.claude-plugin/plugin.json` at root works identically in Claude Code (loaded via marketplace install or `--plugin-dir`) and Cowork (loaded via marketplace install or `.plugin` upload). No dual build.
 
 ## Layout
 
 ```
 align/
 ├── .claude-plugin/
-│   └── plugin.json                          # manifest (v0.7.0)
+│   ├── plugin.json                          # manifest (v0.8.0)
+│   └── marketplace.json                     # single-plugin marketplace (this repo serves itself)
 ├── commands/
 │   ├── align.md                             # /align command (thin entrypoint → skills/align/)
-│   └── retro.md                             # /retro command (full skill body)
+│   ├── retro.md                             # /retro command (synthesis + apply)
+│   └── diagnose.md                          # /diagnose command (root-cause trace)
 ├── skills/
 │   ├── align/
 │   │   ├── SKILL.md                         # /align skill: Phase 1/2 flow, Claim Adapter Contract
 │   │   └── align-template.html              # interactive feedback form
-│   └── retro/
-│       └── SKILL.md                         # /retro skill: synthesis + apply mode
+│   ├── retro/
+│   │   └── SKILL.md                         # /retro skill: synthesis + apply + saturation check
+│   └── diagnose/
+│       └── SKILL.md                         # /diagnose skill: per-claim root-cause trace
 ├── references/
 │   ├── claim-extraction-rhythm.md           # rhythm-specific producer heuristics
 │   ├── archive-format.md                    # manifest schema, file layout, invariants
 │   ├── integrations.md                      # TASKS.md, smart-memory queue, /retro
 │   ├── retro-design.md                      # /retro design + review-gate mechanics
-│   └── v0.7.0-design.md                     # most recent release design
+│   └── v0.7.0-design.md                     # design notes for the v0.7.0 multi-skill restructure
 ├── README.md                                # you are here
 ├── CONTRIBUTING.md                          # contributor guide; maintainer disclosure
 ├── SECURITY.md                              # disclosure protocol; smart-memory caveat
 └── LICENSE                                  # MIT
 ```
 
-Multi-skill plugin as of v0.7.0: `skills/align/SKILL.md` and `skills/retro/SKILL.md` are the canonical skill files. Invocation: `/align` and `/retro` (or `/align:align` and `/align:retro` for namespaced form). Skill `SKILL.md` files MUST start with `---` on line 1 (YAML frontmatter) — anything before that breaks plugin validation on Cowork. The `references/` files are loaded on demand by Claude when a skill cites them — they're not in the always-loaded context.
+Multi-skill plugin as of v0.7.0, extended in v0.8.0: `skills/align/SKILL.md`, `skills/retro/SKILL.md`, `skills/diagnose/SKILL.md` are the canonical skill files. Invocation: `/align`, `/retro`, `/diagnose` (or `/align:align`, `/align:retro`, `/align:diagnose` for namespaced form). Skill `SKILL.md` files MUST start with `---` on line 1 (YAML frontmatter) — anything before that breaks plugin validation on Cowork. The `references/` files are loaded on demand by Claude when a skill cites them — they're not in the always-loaded context.
 
 ## Extending — using /align with a new producer
 
@@ -105,6 +114,7 @@ No instrumentation contract beyond the array. The producer can live in this plug
 /retro apply                 # Stage 2 — open PRs from the most recent pass's proposed patches
 /retro apply <pass-file>     # apply patches from a specific pass
 /retro apply --dry-run       # show what /retro apply would do without writing
+/diagnose <pass-file>        # trace each wrong claim back to the stale instruction that caused it
 ```
 
 The skill auto-detects which claim-producing output to read from the current conversation. Pass a context hint as the first argument to override the filename slug.
