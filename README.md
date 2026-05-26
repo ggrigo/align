@@ -162,6 +162,32 @@ Most LLM outputs are a synthesis of many statements at once. *"Of the seven clai
 
 No. The archive is **for the operator**, not for compliance or external accountability. It's local, append-only `.md` files in the operator's own repo. There's no team dashboard, no shared queue, no org-wide metrics. If you need org-scale eval-ops, look at [LangSmith, Braintrust, Humanloop, Langfuse, MLflow, Phoenix](#what-this-does-not-do) — they live in that lane.
 
+## Troubleshooting
+
+### The form doesn't open in my browser
+
+The form is a local HTML file at the path `/align` reported in its handoff message. Open the file path directly — `open <path>` on macOS, `xdg-open <path>` on Linux, or paste the `file://` URL into your browser. On Cowork, the `computer://` link in the handoff is the equivalent.
+
+### `/align done` can't find my downloaded `.md`
+
+Phase 2 scans, in order: `~/Downloads/`, the active working folder, `incoming-docs/` (Cowork convention), and the current working directory. It picks the most recent `align-*.md` by mtime. If yours is elsewhere, pass the path explicitly: `/align done /path/to/your.md`.
+
+### The Cowork plugin upload fails validation
+
+If you're packaging `/align` as a `.plugin` for Cowork: `skills/align/SKILL.md` must start with `---` (YAML frontmatter) on line 1. Anything before that — including HTML comments — breaks Cowork's validator. Convention going forward: every `SKILL.md` starts with `---` on line 1; changelog comments belong after the closing `---`. This was fixed in `/align` v0.7.0; if you're working from a fork or older copy, check that the YAML is at the file head.
+
+### Smart-memory writes aren't happening
+
+`/align` writes to the `decisions` collection only when the smart-memory MCP tools are available in the active Claude session. If not wired, corrections queue to `align-corrections-pending.md` in the archive folder and drain when a later session has the tools. No correction is dropped silently — check the queue file if you're unsure whether a correction landed.
+
+### The exported `.md` has the wrong date / timezone
+
+The form substitutes `{{TIMEZONE}}` (IANA name like `Europe/Athens`) at template-render time if the skill provides it. If left unsubstituted, it falls back to the browser's local zone. To lock a session to a specific timezone, the producer skill should set the `{{TIMEZONE}}` placeholder when invoking `/align`.
+
+### Sum-invariant check failed in my archive entry
+
+Per `references/archive-format.md`, every manifest row must satisfy `✅ + ❌ + 🔶 + 🔷 + 🤷 + ➖ + ⬜ = Claims`. If your row doesn't, either the claim count is wrong, a rating wasn't captured (look at the form export — was every claim rated or were some left unrated?), or the manifest count is off. Recompute from the exported `.md`'s Summary table; that's the source of truth.
+
 ## Maintenance
 
 `/align` is authored by [Georgios Grigoriadis](https://github.com/ggrigo) and maintained by **agent ggrigo** ([`agent-ggrigo`](https://github.com/agent-ggrigo)) — an LLM agent operating on a standing mandate from Georgios. The agent identifies itself as the maintainer in issues, PRs, releases, and replies. It defers to Georgios on contested judgment.
