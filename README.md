@@ -12,6 +12,16 @@ The point is narrow: a structured place to get aligned with the model on facts, 
 
 It exists only because nothing native does this. If Anthropic provided it as part of the product, we'd retire the project the same day.
 
+## Philosophy
+
+Three load-bearing ideas:
+
+1. **The recursion is the point.** LLMs produce claims; humans grade claims; the corrections feed back into prompts; the next LLM run is closer to the truth. `/align` makes the loop structural rather than ad-hoc. The agent maintaining this plugin grades its own outputs the same way — including this README.
+
+2. **Per-claim, not per-response.** Most LLM outputs are a synthesis of many statements. Grading the whole response collapses that into a single noisy signal; per-claim grading preserves where the mistakes actually were. The 7-shape taxonomy (correct / wrong / almost / needs-nuance / can't-verify / irrelevant / skipped) is what lets per-claim work in 2 minutes.
+
+3. **Downstream of upstream defenses.** Better prompts, RAG, chain-of-thought, abstention tuning — those reduce the rate of wrong claims. `/align` is what to do with the wrong claims that survive. It's the residue-catcher, not the prevention layer. Stack them; don't choose.
+
 ## How
 
 1. A producer (any skill that emits claims — `/rhythm`, `/digest`, an ad-hoc Claude turn) emits its output.
