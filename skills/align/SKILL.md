@@ -1,7 +1,7 @@
 ---
 name: align
 description: |
-  Epistemic feedback loop. Generate an interactive HTML form where the user rates LLM-produced claims as correct, wrong, almost, needs-nuance, can't-verify, irrelevant, or skipped — plus add notes and flag missing items. Submit downloads an align.md that Claude reads back to apply corrections to TASKS.md, smart-memory (guarded), and the per-session archive.
+  Epistemic feedback loop. Generate an interactive HTML form where the user rates LLM-produced claims as correct, wrong, almost, needs-nuance, can't-verify, or skipped — plus add notes and flag missing items. Submit downloads an align.md that Claude reads back to apply corrections to TASKS.md, smart-memory (guarded), and the per-session archive.
 
   Source-agnostic by contract: any producer (rhythm, digest, briefing, todo, code review, financial recon, anything) that emits claims matching the Claim Adapter Contract can be aligned.
 
@@ -171,7 +171,7 @@ The user can also hand off explicitly: "I saved it to /tmp/foo.md" — accept an
 The `.md` has four named sections (export format from the template):
 - `## Summary` — table of status counts per category. Useful for `/retro`-style passes that want per-session metrics without parsing per-claim ratings.
 - `## Corrections Required` — claims marked wrong / almost / needs-nuance, each with a Reality note from the user.
-- `## Confirmed / Other` — claims marked correct, irrelevant, skipped, or can't-verify.
+- `## Confirmed / Other` — claims marked correct, skipped, or can't-verify.
 - `## Missing — Not Captured` — items the user added that weren't in the original output.
 
 #### Step 3 — Apply corrections

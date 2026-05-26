@@ -1,7 +1,7 @@
 {
   "name": "align",
   "version": "0.7.0",
-  "description": "Personal evals for Claude Code: capture the corrections you'd otherwise mutter and forget. Rate LLM claims (correct/wrong/almost/needs-nuance/can't-verify/irrelevant/skipped) in a local HTML form, archive as machine-readable markdown, feed patterns back into prompts and CLAUDE.md.",
+  "description": "Personal evals for Claude Code: capture the corrections you'd otherwise mutter and forget. Rate LLM claims (correct/wrong/almost/needs-nuance/can't-verify/skipped) in a local HTML form, archive as machine-readable markdown, feed patterns back into prompts and CLAUDE.md.",
   "author": {
     "name": "Georgios Grigoriadis",
     "email": "ggrigo@gmail.com"

@@ -45,9 +45,9 @@ align-{context-slug}-YYYY-MM-DD.md
 ### Manifest table schema
 
 ```markdown
-| # | Date | Source | Claims | ✅ | ❌ | 🔶 | 🔷 | 🤷 | ➖ | ⬜ | File |
-|---|------|--------|--------|---|---|---|---|---|---|---|------|
-| 1 | 2026-03-11 AM | /rhythm full — morning brief | 15 | 9 | 1 | 2 | 2 | 0 | 0 | 1 | `align-rhythm-2026-03-11.md` |
+| # | Date | Source | Claims | ✅ | ❌ | 🔶 | 🔷 | 🤷 | ⬜ | File |
+|---|------|--------|--------|---|---|---|---|---|---|------|
+| 1 | 2026-03-11 AM | /rhythm full — morning brief | 15 | 9 | 1 | 2 | 2 | 0 | 1 | `align-rhythm-2026-03-11.md` |
 ```
 
 **Fixed column order, do not reorder:**
@@ -63,17 +63,18 @@ align-{context-slug}-YYYY-MM-DD.md
 | `🔶` | int | Count of "almost" ratings |
 | `🔷` | int | Count of "needs nuance" ratings |
 | `🤷` | int | Count of "can't verify" ratings (typically from `verifiable: false`) |
-| `➖` | int | Count of "irrelevant" ratings |
 | `⬜` | int | Count of "skipped / unrated" |
 | `File` | string | Backtick-quoted filename of the `.md`, no path prefix |
 
 ### Counts must sum to total
 
 ```
-✅ + ❌ + 🔶 + 🔷 + 🤷 + ➖ + ⬜ = Claims
+✅ + ❌ + 🔶 + 🔷 + 🤷 + ⬜ = Claims
 ```
 
 This invariant is checked at archive time. If the sum doesn't match `Claims`, the session is malformed — usually a missing rating in the form's export. Don't write a malformed row to the manifest; investigate first.
+
+**Historical note**: archive entries through v0.7.0 carried a 7th column `➖` for "irrelevant" ratings; that column was dropped in v0.8.0 because the operational reality was always 6-shape (the form never had a ➖ button; the archive has zero ➖ rows). Pre-v0.8 historical rows in `align-index.md` that retain a ➖ column should be treated as 6-shape with the ➖ count summed into adjacent ratings (or dropped if zero, which they always are).
 
 ### What does NOT go in the manifest row
 
