@@ -1,0 +1,7 @@
+# Local unzip of design-tokens bundles
+design-tokens/extracted/
+
+# Editor + OS
+.DS_Store
+.vscode/
+*.swp
