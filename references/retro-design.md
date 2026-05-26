@@ -100,15 +100,15 @@ Sources read: <list of session filenames>
 
 ## Aggregate metrics
 
-| # | Source | Claims | ✅ | ❌ | 🔶 | 🔷 | 🤷 | ➖ | ⬜ |
-|---|--------|--------|----|----|----|----|----|----|----|
+| # | Source | Claims | ✅ | ❌ | 🔶 | 🔷 | 🤷 | ⬜ |
+|---|--------|--------|----|----|----|----|----|----|
 | 1 | <session source> | ... | ... |
 | ...
 | **Total** | | ... |
 
 Accuracy roll-up (✅ / rated): N%.            <!-- rated = total − ⬜ -->
 Raw accuracy (✅ / total): N%.                 <!-- emit only when ⬜ > 0 -->
-Calibration roll-up ((✅+❌+🔶+🔷+➖+⬜) / total): N%.
+Calibration roll-up ((✅+❌+🔶+🔷+⬜) / total): N%.
 Aspirational rate (🤷 / total): N%.
 
 Saturation status: <saturated | active | insufficient data> (window K = N).

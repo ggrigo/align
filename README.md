@@ -1,6 +1,6 @@
 # align
 
-Personal evals for Claude Code and Cowork. Capture the corrections you'd otherwise mutter and forget — rate LLM claims as **correct / wrong / almost / needs-nuance / can't-verify / irrelevant / skipped** in a local HTML form, archive as machine-readable markdown, and feed patterns back into your prompts and `CLAUDE.md`.
+Personal evals for Claude Code and Cowork. Capture the corrections you'd otherwise mutter and forget — rate LLM claims as **correct / wrong / almost / needs-nuance / can't-verify / skipped** in a local HTML form, archive as machine-readable markdown, and feed patterns back into your prompts and `CLAUDE.md`.
 
 ## Why
 
@@ -18,7 +18,7 @@ Three load-bearing ideas:
 
 1. **The recursion is the point.** LLMs produce claims; humans grade claims; the corrections feed back into prompts; the next LLM run is closer to the truth. `/align` makes the loop structural rather than ad-hoc. The agent maintaining this plugin grades its own outputs the same way — including this README.
 
-2. **Per-claim, not per-response.** Most LLM outputs are a synthesis of many statements. Grading the whole response collapses that into a single noisy signal; per-claim grading preserves where the mistakes actually were. The 7-shape taxonomy (correct / wrong / almost / needs-nuance / can't-verify / irrelevant / skipped) is what lets per-claim work in 2 minutes.
+2. **Per-claim, not per-response.** Most LLM outputs are a synthesis of many statements. Grading the whole response collapses that into a single noisy signal; per-claim grading preserves where the mistakes actually were. The 6-shape taxonomy (correct / wrong / almost / needs-nuance / can't-verify / skipped) is what lets per-claim work in 2 minutes.
 
 3. **Downstream of upstream defenses.** Better prompts, RAG, chain-of-thought, abstention tuning — those reduce the rate of wrong claims. `/align` is what to do with the wrong claims that survive. It's the residue-catcher, not the prevention layer. Stack them; don't choose.
 
@@ -130,7 +130,7 @@ If you want LangSmith / Humanloop / Braintrust / Phoenix functionality, install 
 
 ## Closest prior art
 
-- **EvalGen / criteria drift** ([Shankar et al., UIST 2024](https://arxiv.org/abs/2404.12272)) — the strongest conceptual match. Some evaluation criteria can only be articulated *after* grading outputs, and users revise earlier grades as criteria sharpen. EvalGen sits upstream of `/align`: it generates candidate evaluator implementations and uses humans to select; `/align` skips evaluator-generation and asks the human to grade each session directly. The taxonomy (correct/wrong/almost/needs-nuance/can't-verify/irrelevant/skipped) is the fixed UI; the per-claim reality notes are where criteria evolve.
+- **EvalGen / criteria drift** ([Shankar et al., UIST 2024](https://arxiv.org/abs/2404.12272)) — the strongest conceptual match. Some evaluation criteria can only be articulated *after* grading outputs, and users revise earlier grades as criteria sharpen. EvalGen sits upstream of `/align`: it generates candidate evaluator implementations and uses humans to select; `/align` skips evaluator-generation and asks the human to grade each session directly. The taxonomy (correct/wrong/almost/needs-nuance/can't-verify/skipped) is the fixed UI; the per-claim reality notes are where criteria evolve.
 - **Hamel Husain & Shreya Shankar's evals course** ([AI Evals For Engineers & PMs](https://maven.com/parlance-labs/evals)) — Hamel and Shreya (the EvalGen lead author above) teach the manual workflow: review ~100+ traces by hand, open-code reactions in free text, cluster into a failure taxonomy, count categories, iterate to theoretical saturation. `/align` operationalizes the inner loop — each per-claim rating is an open-coded observation; the 7-shape taxonomy is the failure-taxonomy UI; `/retro` is the across-session clustering step. The two prior-art entries above aren't independent — Shreya leads on EvalGen and co-teaches with Hamel.
 - **Claude Code plugin-eval tooling** ([cc-plugin-eval](https://github.com/sjnims/cc-plugin-eval), [claude-eval](https://github.com/bkper/claude-eval), [promptfoo for Claude Code skills](https://www.mager.co/blog/2026-02-23-skills-validate-eval/)) — adjacent in name, complementary in role. These sit at the **build-time gate**: a plugin author validates that their skill triggers correctly and produces output of the expected shape, automated by LLM-as-judge or deterministic detection. `/align` sits at the **run-time inner loop**: a plugin consumer grades the actual claims that came out of a real session. Same plugin lifecycle, different points. A plugin author *should* use the build-time tools in CI; a plugin user *should* use `/align` in their inner loop. Pair them; don't choose.
 
@@ -196,7 +196,7 @@ The form substitutes `{{TIMEZONE}}` (IANA name like `Europe/Athens`) at template
 
 ### Sum-invariant check failed in my archive entry
 
-Per `references/archive-format.md`, every manifest row must satisfy `✅ + ❌ + 🔶 + 🔷 + 🤷 + ➖ + ⬜ = Claims`. If your row doesn't, either the claim count is wrong, a rating wasn't captured (look at the form export — was every claim rated or were some left unrated?), or the manifest count is off. Recompute from the exported `.md`'s Summary table; that's the source of truth.
+Per `references/archive-format.md`, every manifest row must satisfy `✅ + ❌ + 🔶 + 🔷 + 🤷 + ⬜ = Claims`. If your row doesn't, either the claim count is wrong, a rating wasn't captured (look at the form export — was every claim rated or were some left unrated?), or the manifest count is off. Recompute from the exported `.md`'s Summary table; that's the source of truth.
 
 ## Maintenance
 

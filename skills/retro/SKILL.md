@@ -59,11 +59,11 @@ Read each row and apply the date/slug filter. Keep:
 - Session number (`#`)
 - Date
 - Source string
-- The seven count columns (✅ ❌ 🔶 🔷 🤷 ➖ ⬜)
+- The six count columns (✅ ❌ 🔶 🔷 🤷 ⬜)
 - Total `Claims` count
 - Filename of the per-session `.md`
 
-Verify the per-row sum-invariant (✅+❌+🔶+🔷+🤷+➖+⬜ = Claims). If any row fails, flag it in the pass output's anti-pattern section — don't stop.
+Verify the per-row sum-invariant (✅+❌+🔶+🔷+🤷+⬜ = Claims). If any row fails, flag it in the pass output's anti-pattern section — don't stop.
 
 ### Step 2 — Read each session's `.md`
 
@@ -178,14 +178,14 @@ Sources read: <list of session filenames>
 
 ## Aggregate metrics
 
-| # | Source | Claims | ✅ | ❌ | 🔶 | 🔷 | 🤷 | ➖ | ⬜ |
-|---|--------|--------|----|----|----|----|----|----|----|
+| # | Source | Claims | ✅ | ❌ | 🔶 | 🔷 | 🤷 | ⬜ |
+|---|--------|--------|----|----|----|----|----|----|
 | ... |
 | **Total** | | ... |
 
 Accuracy roll-up (✅ / rated): N%.            <!-- rated = total − ⬜ -->
 Raw accuracy (✅ / total): N%.                 <!-- emit only when ⬜ > 0 -->
-Calibration roll-up ((✅+❌+🔶+🔷+➖+⬜) / total): N%.
+Calibration roll-up ((✅+❌+🔶+🔷+⬜) / total): N%.
 Aspirational rate (🤷 / total): N%.
 
 Saturation status: <saturated | active | insufficient data> (window K = N).
