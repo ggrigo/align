@@ -63,12 +63,8 @@ An `align/` directory with `.claude-plugin/plugin.json` at root works identicall
 ```
 align/
 ├── .claude-plugin/
-│   ├── plugin.json                          # manifest (v0.8.0)
+│   ├── plugin.json                          # manifest (v0.8.1)
 │   └── marketplace.json                     # single-plugin marketplace (this repo serves itself)
-├── commands/
-│   ├── align.md                             # /align command (thin entrypoint → skills/align/)
-│   ├── retro.md                             # /retro command (synthesis + apply)
-│   └── diagnose.md                          # /diagnose command (root-cause trace)
 ├── skills/
 │   ├── align/
 │   │   ├── SKILL.md                         # /align skill: Phase 1/2 flow, Claim Adapter Contract
@@ -89,7 +85,9 @@ align/
 └── LICENSE                                  # MIT
 ```
 
-Multi-skill plugin as of v0.7.0, extended in v0.8.0: `skills/align/SKILL.md`, `skills/retro/SKILL.md`, `skills/diagnose/SKILL.md` are the canonical skill files. Invocation: `/align`, `/retro`, `/diagnose` (or `/align:align`, `/align:retro`, `/align:diagnose` for namespaced form). Skill `SKILL.md` files MUST start with `---` on line 1 (YAML frontmatter) — anything before that breaks plugin validation on Cowork. The `references/` files are loaded on demand by Claude when a skill cites them — they're not in the always-loaded context.
+Skills-only plugin as of v0.8.1: `skills/align/SKILL.md`, `skills/retro/SKILL.md`, `skills/diagnose/SKILL.md` are the canonical entry points. Invocation: `/align`, `/retro`, `/diagnose` (or `/align:align`, `/align:retro`, `/align:diagnose` for namespaced form). Skill `SKILL.md` files MUST start with `---` on line 1 (YAML frontmatter) — anything before that breaks plugin validation on Cowork. The `references/` files are loaded on demand by Claude when a skill cites them — they're not in the always-loaded context.
+
+**v0.8.1 note on structure:** v0.7.0–0.8.0 also shipped `commands/<name>.md` files as thin wrappers around the skills. v0.8.1 removed them — having both `commands/align.md` and `skills/align/SKILL.md` of the same name collides under Cowork's marketplace validator (Claude Code's loader was more permissive and just warned). Skills now own the slash command entry directly, matching the `anthropics/knowledge-work-plugins` pattern.
 
 ## Extending — using /align with a new producer
 

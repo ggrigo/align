@@ -1,6 +1,6 @@
 {
   "name": "align",
-  "version": "0.8.0",
+  "version": "0.8.1",
   "description": "Personal evals for Claude Code and Cowork. Three skills: /align rates LLM claims (correct/wrong/almost/needs-nuance/can't-verify/skipped) in a local HTML form; /retro synthesizes the archive into failure-mode clusters + gated patches; /diagnose traces wrong claims back to the stale instruction that caused them.",
   "author": {
     "name": "Georgios Grigoriadis",
