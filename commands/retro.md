@@ -141,6 +141,27 @@ After both clustering steps complete (Step 3 + Step 4), check whether the latest
 - **Very large archives (N >> 20):** the K=5 default reads a small recent slice. To read the full Hamel-scale window, the user filters to recent traces (e.g., `/retro 2026-05`) so the saturation check fires over the relevant N.
 - **Mixed-source archives:** if the recent window happens to draw from a different source than the prior window, the saturation read can be misleading. Note the source distribution in the §Anti-pattern self-check.
 
+### Step 4.6 — Analyst pass (additive in v0.8)
+
+After clustering + saturation, before patch proposals, run an **analyst pass** over the manifest table. The goal: surface quantitative patterns and non-discriminating signals that aren't captured by cluster-shape reasoning. Borrowed from Anthropic's `skill-creator` benchmark workflow ([reading note tick-144](../../agent-ggrigo/reading/2026-05-26-anthropic-plugins-survey-part-2.md)).
+
+**What to compute:**
+
+1. **Per-producer pass-rate variance.** Group the manifest's rows by source slug (the "Source" column). For each group with ≥3 sessions:
+   - Compute `mean ± stddev` of the accuracy roll-up (✅ / rated) across those sessions.
+   - Surface groups with `stddev > 15%` as **high-variance producers** (the same producer flips between good and bad across sessions; something is unstable upstream).
+   - Surface groups with `stddev < 5%` and `mean > 90%` as **non-discriminating producers** (always rate near-perfect; their claims may not be falsifiable enough to be informative).
+
+2. **Per-claim recurrence detection.** Across pass files, identify *individual claim texts* (the `> {claim text}` content) that recur across sessions:
+   - **Recurring-and-always-correct**: the same claim shape rates ✅ in ≥3 separate passes. Candidate for *dropping from future extraction* — informative noise.
+   - **Recurring-and-mixed**: the same claim rates ✅ in some passes and ❌/🔶 in others (≥2 of each). Candidate for *root-cause investigation* — the claim is genuinely ambiguous; either the producer is unstable on this claim or the user's grading criteria shifted.
+
+3. **Time/token tradeoffs** (when archive carries cost data; future-archive-format extension): not in v0.8. Placeholder for v0.9.
+
+**Output**: a new `## Analyst pass` section in the schema (see Step 6). Findings are descriptive, not prescriptive — they inform the patch proposal step but don't drive it directly.
+
+**When the analyst pass surfaces nothing**: omit the section entirely (don't emit empty headers).
+
 ### Step 5 — Propose patches (gated)
 
 For each qualifying cluster (failure-mode or blind-spot), propose one concrete patch. A patch is one of:
@@ -189,6 +210,26 @@ Calibration roll-up ((✅+❌+🔶+🔷+⬜) / total): N%.
 Aspirational rate (🤷 / total): N%.
 
 Saturation status: <saturated | active | insufficient data> (window K = N).
+
+---
+
+## Analyst pass
+
+[Emit this section only if analyst-pass findings exist; omit entirely otherwise. v0.8 additive.]
+
+### Per-producer variance
+
+| Producer | Sessions | Mean accuracy | Stddev | Tag |
+|----------|----------|---------------|--------|-----|
+| <source slug> | N | M% | σ% | <high-variance \| non-discriminating \| stable> |
+
+- **High-variance** (stddev > 15%): <producer slug> — flips between <highest>% and <lowest>%. Investigate upstream instability.
+- **Non-discriminating** (stddev < 5%, mean > 90%): <producer slug> — claims may not be falsifiable enough to be informative. Consider whether to keep extracting.
+
+### Recurring claims
+
+- **Always-correct (≥3 passes, no errors)**: "<claim text excerpt>" — candidate for dropping from extraction. Informative noise.
+- **Mixed (≥2 ✅ AND ≥2 ❌/🔶 across passes)**: "<claim text excerpt>" — genuinely ambiguous; either producer-side instability or rater criteria drift. Investigate at root.
 
 ---
 
