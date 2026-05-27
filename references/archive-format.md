@@ -92,16 +92,28 @@ When smart-memory MCP isn't available during Phase 2, corrections that would hav
 rhythm/align-archive/
 ├── align-index.md                              # the manifest
 ├── align-corrections-pending.md                # queue (created on first guarded write)
-├── align-rhythm-2026-03-11.html
-├── align-rhythm-2026-03-11.md
+├── align-rhythm-2026-03-11.html                # /align session form (v0.1+)
+├── align-rhythm-2026-03-11.md                  # /align session datapoint (v0.1+)
 ├── align-rhythm-day-2026-03-11.html
 ├── align-rhythm-day-2026-03-11.md
 ├── align-rhythm-2026-03-12.html
 ├── align-rhythm-2026-03-12.md
-... (one .html + one .md pair per session)
+├── diagnose-rhythm-2026-03-12.md               # /diagnose report (v0.8+; .md only, qualitative)
+├── retro-output/                               # /retro synthesis passes (v0.6+)
+│   ├── 2026-03-15-pass-1.md
+│   └── 2026-03-22-pass-2.md
+... (one .html + one .md pair per /align session; one .md per /diagnose run; one .md per /retro pass under retro-output/)
 ```
 
-No subfolders. Flat layout; the manifest is the index.
+One subfolder (`retro-output/`) for `/retro` synthesis passes; everything else is flat. The manifest `align-index.md` indexes only `/align` sessions — `/diagnose` and `/retro` outputs are addressed by date + slug pairing alongside their source files (a `/diagnose` report pairs with the `/align` pass it diagnosed; a `/retro` pass aggregates the archive at the time of run).
+
+**Per-release lineage of the layout:**
+
+- **v0.1–v0.5:** `align-index.md`, `align-corrections-pending.md`, and `align-<slug>-<date>.{html,md}` pairs only. Flat.
+- **v0.6 (/retro):** added `retro-output/<date>-pass-N.md`. First subfolder.
+- **v0.8 (/diagnose):** added `diagnose-<slug>-<date>.md` (alongside the `/align` pair it traces, not under a subfolder; qualitative so no manifest row).
+
+The sum-invariant at §Manifest table schema applies only to `/align` session rows. `/diagnose` and `/retro` outputs are not graded directly in the manifest (though they ARE `/align`-able as LLM outputs — see the recursion notes in their respective SKILL.md files).
 
 ## What `/retro` expects
 
