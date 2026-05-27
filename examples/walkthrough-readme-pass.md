@@ -8,7 +8,7 @@ The source being graded here is `/align`'s own `README.md` at commit [`36330d3`]
 
 1. **A producer emits output.** Here: the README file (which is itself a producer of falsifiable claims about how `/align` works).
 2. **`/align` extracts claims.** Each claim gets an `id`, the claim `text`, a `source` hint, and a few optional fields for context.
-3. **A form opens.** Local HTML file, one row per claim, 7-shape rating taxonomy: ✅ correct / ❌ wrong / 🔶 almost / 🔷 needs nuance / 🤷 can't-verify / ➖ irrelevant / ⬜ skipped.
+3. **A form opens.** Local HTML file, one row per claim, 6-shape rating taxonomy: ✅ correct / ❌ wrong / 🔶 almost / 🔷 needs nuance / 🤷 can't-verify / ⬜ skipped. *(Historical note: this walkthrough was run under v0.7.0's 7-shape taxonomy, which included `➖ irrelevant`. v0.8 dropped that column — see [CHANGELOG.md](../CHANGELOG.md) for the rationale. The walkthrough body below preserves the v0.7.0 details accurately to the pass; only this canonical description is updated to the current shape.)*
 4. **You rate.** Two minutes, click through. Reality notes on the wrong/almost/nuance ones — *what's actually true and where to verify*.
 5. **Form exports `.md`.** Structured markdown with one section per non-✅ claim plus a confirmed-claims summary.
 6. **Archive + act.** The `.md` lands in the dogfooding archive; the findings drive concrete fixes (new commits, new PRs, prompt updates).
