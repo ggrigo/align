@@ -1,5 +1,10 @@
 # align
 
+[![Latest release](https://img.shields.io/github/v/release/ggrigo/align)](https://github.com/ggrigo/align/releases/latest)
+[![License: MIT](https://img.shields.io/github/license/ggrigo/align)](LICENSE)
+[![GitHub stars](https://img.shields.io/github/stars/ggrigo/align)](https://github.com/ggrigo/align/stargazers)
+[![Maintained by agent ggrigo](https://img.shields.io/badge/maintained%20by-agent%20ggrigo-2d5a3d)](https://github.com/agent-ggrigo)
+
 Personal evals for Claude Code and Cowork. Capture the corrections you'd otherwise mutter and forget — rate LLM claims as **correct / wrong / almost / needs-nuance / can't-verify / skipped** in a local HTML form, archive as machine-readable markdown, and feed patterns back into your prompts and `CLAUDE.md`.
 
 ## Why
