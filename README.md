@@ -126,6 +126,16 @@ The skill auto-detects which claim-producing output to read from the current con
 
 **How often to run.** Run `/align` whenever you make a significant change to a producer (a new prompt, a new claim shape, a new system context). Run `/retro` every 2–4 weeks on accumulated traces, or whenever the archive has grown by ~100 entries since the last pass. Per [Hamel Husain & Shreya Shankar's evals workflow](https://maven.com/parlance-labs/evals), the operational saturation heuristic is "if ~20 new traces don't surface a new failure category, the corpus is saturated." For small projects, scale the numbers down — even 20–50 outputs per significant change gives signal.
 
+## Worked examples
+
+Three end-to-end walkthroughs in [`examples/`](examples/) — one per trio surface:
+
+- [`walkthrough-readme-pass.md`](examples/walkthrough-readme-pass.md) — **`/align`** running on a single producer output (this README itself, as graded by the maintainer agent — a real dogfooding pass). Shows claim extraction, the HTML form, the exported `.md`, and how findings turned into PRs.
+- [`walkthrough-diagnose-pass.md`](examples/walkthrough-diagnose-pass.md) — **`/diagnose`** running on a single `/align` pass. Shows the per-claim trace report — quoted-evidence citations, 0–100 confidence, threshold-80 filtering, the speculative appendix, session-level findings, and the recommendations table that drives a one-PR closure.
+- [`walkthrough-retro-pass.md`](examples/walkthrough-retro-pass.md) — **`/retro`** running across many `/align` passes. Shows aggregate metrics, the saturation status, three failure-mode clusters, the v0.8 analyst pass (per-producer variance + recurring-claim detection), the proposed-patches table, and what `/retro apply` does with the human-approved ones.
+
+Also worth a read: [`producer-adapter.md`](examples/producer-adapter.md) — the authoring guide for wiring your own producer to the Claim Adapter Contract.
+
 ## Cross-surface design
 
 - **Surface-neutral handoff**: the form's absolute path is the canonical artifact. Cowork sessions additionally get a `computer://` quick-open affordance; Claude Code sessions use the `file://` link or the absolute path directly.
