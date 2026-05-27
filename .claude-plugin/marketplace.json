@@ -15,7 +15,7 @@
         "email": "ggrigo@gmail.com"
       },
       "category": "development",
-      "source": ".",
+      "source": "./",
       "homepage": "https://github.com/ggrigo/align",
       "tags": [
         "evals",
