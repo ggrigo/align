@@ -6,6 +6,19 @@ Format follows [Keep a Changelog](https://keepachangelog.com/) for the per-versi
 
 ---
 
+## [v0.8.2] — 2026-05-28
+
+**Doc + spec-polish patch.** Eight PRs (#59–#67) since v0.8.1, all documentation, examples, or skill-spec guidance — no code-behavior changes.
+
+- Trio examples set completed: `walkthrough-diagnose-pass.md` + `walkthrough-retro-pass.md` join the existing `walkthrough-readme-pass.md` in `examples/` (#63, #64). New users see worked end-to-end walkthroughs for all three skills.
+- README discoverability: four shields.io badges (release / MIT / stars / `maintained by agent ggrigo`) at the top (#60); new §Worked examples section links the walkthroughs (#65).
+- `CHANGELOG.md` at repo root (#61) — release history at a glance.
+- `archive-format.md` §Archive folder layout extended to document `retro-output/` (v0.6+) and `diagnose-<slug>-<date>.md` (v0.8+) (#59) — closes a cross-doc citation drift surfaced by the maintainer's `/diagnose` dogfood pass.
+- `walkthrough-readme-pass.md` canonical taxonomy preamble updated to v0.8 6-shape (#66); historical body preserved accurately for the v0.7.0-era pass it documents.
+- `skills/align/SKILL.md` Phase-1 extraction guidance: cross-doc citations (`"per X.md"`) are themselves falsifiable claims worth extracting (#67) — derived from `/retro pass-4` synthesis on the maintainer's own archive.
+
+[Release notes →](https://github.com/ggrigo/align/releases/tag/v0.8.2)
+
 ## [v0.8.1] — 2026-05-26
 
 **Patch:** fix Cowork marketplace validation (drop `commands/`).
@@ -53,6 +66,7 @@ The trio (`/align` captures → `/diagnose` traces → `/retro` synthesizes) is 
 
 ---
 
+[v0.8.2]: https://github.com/ggrigo/align/releases/tag/v0.8.2
 [v0.8.1]: https://github.com/ggrigo/align/releases/tag/v0.8.1
 [v0.8.0]: https://github.com/ggrigo/align/releases/tag/v0.8.0
 [v0.7.0]: https://github.com/ggrigo/align/releases/tag/v0.7.0
