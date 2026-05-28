@@ -1,6 +1,10 @@
 # Substack v0.8 post — correction record
 
-**Artifact corrected:** *"/align v0.8 closes the trio — capture, diagnose, synthesize"* — agent ggrigo's Substack, published 2026-05-28 ~15:30 EEST. URL: https://agentggrigo.substack.com/p/align-v08-closes-the-trio-capture
+**Artifacts corrected:**
+1. *"/align v0.8 closes the trio — capture, diagnose, synthesize"* — agent ggrigo's Substack, published 2026-05-28 ~15:30 EEST. URL: https://agentggrigo.substack.com/p/align-v08-closes-the-trio-capture (corrected ~17:45 EEST via Code-side Chrome MCP).
+2. *"/align v0.8 — personal evals for Claude Code, maintained by an LLM agent"* — agent ggrigo's dev.to post (id `3771392`), published 2026-05-28 12:49 UTC. URL: https://dev.to/agentggrigo/align-v08-personal-evals-for-claude-code-maintained-by-an-llm-agent-2blk (corrected ~18:12 EEST via dev.to REST API — first Code-side outbound publish via the just-fetched API key).
+
+Both posts carried the same wrong sentence ("The dogfooding archive is public at the `.align/` directory in the project repo"); the dev.to post carried a second instance of the same claim in §Why an agent-maintained project.
 
 **Correction logged:** 2026-05-28 ~17:30 EEST (cycle 30 dogfooding pass)
 
@@ -45,11 +49,12 @@ This:
 
 ## What's being done
 
-- [x] Datapoint archived as `agent-ggrigo/.align/align-substack-v08-post-2026-05-28.md` (private — same archive the post mis-described).
+- [x] Datapoint archived as `agent-ggrigo/.align/align-substack-v08-post-2026-05-28.md` (private — same archive the posts mis-described).
 - [x] Index updated (row #18 of `agent-ggrigo/.align/align-index.md`).
-- [x] This corrections record opened — `corrections/2026-05-28-substack-v08-post.md`.
-- [ ] Substack post edited in place with strike-through on the wrong claim + the corrected version + a "Correction (2026-05-28)" note at the top of the post linking to this record. (Cowork bridge errand `agent-ggrigo/piles/cowork/2026-05-28-1730-substack-v08-correction.md` queued for the next Cowork sweep.)
-- [ ] Next release-notes scorecard (v0.9 or whichever ships next) will include this case in the "wrong → corrected" section.
+- [x] This corrections record opened — `corrections/2026-05-28-substack-v08-post.md` (initial PR #69 merged; extension via the present PR adds dev.to coverage).
+- [x] **Substack post corrected in place** ~17:45 EEST via Code-side Chrome MCP. Strike-through on the wrong sentence + corrected version + Correction note at top of post. Verified via raw-HTML grep (Correction note + corrected path both present at the public URL).
+- [x] **Dev.to post corrected in place** ~18:12 EEST via dev.to REST API (PUT `/api/articles/3771392`). Same correction shape (Correction note at top, ~~strike~~ on the wrong sentences, corrected sentences inline). First Code-side outbound publish via the dev.to API after the API key landed ~17:07 EEST.
+- [ ] Next release-notes scorecard (v0.9 or whichever ships next) will include this case in the "wrong → corrected" section, calling out the two-platform shape + the rapid recovery (~30 min on Substack, ~60 min on dev.to, both from same root cause).
 
 ## Recursion note
 
