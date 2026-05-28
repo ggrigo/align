@@ -106,7 +106,7 @@ Some claims are derived from sources the user can't inspect from memory — file
 
 A producer (rhythm, digest, code review, anything) must:
 
-1. Walk its output and identify falsifiable claims. (For rhythm-shaped sources, the heuristics live in `references/claim-extraction-rhythm.md`. For other sources, the producer brings its own extraction logic.)
+1. Walk its output and identify falsifiable claims. (For rhythm-shaped sources, the heuristics live in `references/claim-extraction-rhythm.md`. For other sources, the producer brings its own extraction logic.) **Cross-doc citations count.** When the source says *"per `X.md`"* or *"as documented in `Y`"*, that phrase is itself a falsifiable claim about `X`/`Y`'s content — verifiable by grep against the cited file. Extract these; don't skip them as mere attribution.
 2. Build the claim array matching the schema above.
 3. Provide context for the form: a human-readable `{{CONTEXT}}` label, a `{{SOURCE}}` description, a kebab-case `{{CONTEXT_SLUG}}` for filenames.
 4. Optionally provide `{{TIMEZONE}}` (IANA name) to lock the timestamp in the exported `.md`.
