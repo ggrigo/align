@@ -1,7 +1,7 @@
 {
   "name": "align",
   "version": "0.8.2",
-  "description": "Personal evals for Claude Code and Cowork. Three skills: /align rates LLM claims (correct/wrong/almost/needs-nuance/can't-verify/skipped) in a local HTML form; /retro synthesizes the archive into failure-mode clusters + gated patches; /diagnose traces wrong claims back to the stale instruction that caused them.",
+  "description": "Output review for Claude Code and Cowork — redline what's wrong in an AI output, keep the correction, feed it back. Three skills: /align rates each claim (correct/wrong/almost/needs-nuance/can't-verify/skipped) in a local HTML form; /diagnose traces a wrong claim back to the stale instruction that caused it; /retro mines the archive for failure-mode patterns. Scales from a 30-second gut-check to a full eval pass.",
   "author": {
     "name": "Georgios Grigoriadis",
     "email": "ggrigo@gmail.com"
@@ -10,13 +10,14 @@
   "repository": "https://github.com/ggrigo/align",
   "license": "MIT",
   "keywords": [
-    "epistemic-feedback",
+    "output-review",
+    "redline",
     "human-in-the-loop",
     "evals",
     "personal-evals",
     "correction-loop",
     "claim-rating",
-    "markdown",
+    "feedback-loop",
     "calibration",
     "criteria-drift"
   ]
