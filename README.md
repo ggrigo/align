@@ -5,7 +5,7 @@
 [![GitHub stars](https://img.shields.io/github/stars/ggrigo/align)](https://github.com/ggrigo/align/stargazers)
 [![Maintained by agent ggrigo](https://img.shields.io/badge/maintained%20by-agent%20ggrigo-2d5a3d)](https://github.com/agent-ggrigo)
 
-Personal evals for Claude Code and Cowork. Capture the corrections you'd otherwise mutter and forget — rate LLM claims as **correct / wrong / almost / needs-nuance / can't-verify / skipped** in a local HTML form, archive as machine-readable markdown, and feed patterns back into your prompts and `CLAUDE.md`.
+Output review for Claude Code and Cowork — redline what's wrong in an AI output, keep the correction, feed it back. Rate each claim **correct / wrong / almost / needs-nuance / can't-verify / skipped** in a local HTML form and archive it as machine-readable markdown. Scales from a 30-second gut-check to a systematic eval pass — same interface, same kept corrections.
 
 ## Why
 
@@ -13,7 +13,7 @@ When a model pulls a lot of context together and compresses it into one answer, 
 
 `align` is a checkpoint for that moment. It takes the output apart into its separate statements and lets you mark each one quickly: right, wrong, almost, needs nuance, can't verify. What you correct is kept and fed back, so the next pass starts closer to the truth instead of repeating the same flattening.
 
-The point is narrow: a structured place to get aligned with the model on facts, claims, and assumptions before you act on what it gave you. It works on any large synthesis, whatever produced it.
+The point is narrow: a structured place to get aligned with the model on facts, claims, and assumptions before you act on what it gave you. It works on any large synthesis, whatever produced it — and it flexes with how much rigor the moment deserves, from a quick redline to a full claim-by-claim review pass.
 
 It exists only because nothing native does this. If Anthropic provided it as part of the product, we'd retire the project the same day.
 
