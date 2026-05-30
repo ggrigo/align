@@ -342,6 +342,7 @@ const R_META = {
   skip:    { label: 'Skip',         emoji: '–', letter: 'S', key: '6' },
 };
 const KEY_TO_RATING = Object.fromEntries(RATINGS.map(r => [R_META[r].key, r]));
+const NEEDS_NOTE = ['wrong', 'almost', 'nuance']; // open a notes box — never auto-advance off these; the user needs time to write
 const ICON_GLYPH = { calendar: '◷', gmail: '✉', slack: '#', fireflies: '◉', drive: '▤', fabric: '◇', rhythm: '♪', briefing: '☱' };
 
 // {{CLAIMS_INJECT}}
@@ -477,7 +478,7 @@ function renderFocused(claim, i) {
   });
   article.append(rb);
 
-  const showNotes = ['wrong', 'almost', 'nuance'].includes(claim.rating);
+  const showNotes = NEEDS_NOTE.includes(claim.rating);
   const notesBox = el('div', { class: 'notes' + (showNotes ? ' notes--open' : '') });
   const labelText = claim.rating === 'wrong' ? "What's the real story?"
     : claim.rating === 'almost' ? "What's missing or off?"
@@ -574,6 +575,15 @@ function rate(r) {
   const c = claims[focused];
   if (!c) return;
   c.rating = c.rating === r ? null : r;
+  // Ratings that open a notes box keep focus on the item so the user can write
+  // the correction; the cursor jumps to the notes field. Only no-note ratings
+  // auto-advance.
+  if (c.rating && NEEDS_NOTE.includes(c.rating)) {
+    render();
+    const ta = document.getElementById('notes-ta');
+    if (ta) ta.focus();
+    return;
+  }
   if (c.rating && window.PREFS.autoAdvance) {
     setTimeout(() => {
       const n = claims.length;

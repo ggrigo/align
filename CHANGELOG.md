@@ -6,6 +6,15 @@ Format follows [Keep a Changelog](https://keepachangelog.com/) for the per-versi
 
 ---
 
+## [v0.8.3] — 2026-05-30
+
+**Patch:** notes ratings no longer skip ahead before you can write.
+
+- Rating a claim **wrong**, **almost**, or **needs-nuance** now keeps you on that claim and drops the cursor in the notes box, so you can type your correction. Only the no-note ratings (correct / can't-verify / skipped) auto-advance. Previously every rating auto-advanced after a moment, cutting off note-writing on exactly the claims that need a note.
+- Internal: the set of "ratings that open a notes box" is now a single shared constant, so the form view and the auto-advance logic can't drift apart.
+
+[Release notes →](https://github.com/ggrigo/align/releases/tag/v0.8.3)
+
 ## [v0.8.2] — 2026-05-28
 
 **Doc + spec-polish patch.** Eight PRs (#59–#67) since v0.8.1, all documentation, examples, or skill-spec guidance — no code-behavior changes.
