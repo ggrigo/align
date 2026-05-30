@@ -49,6 +49,8 @@ The repo doubles as its own single-plugin marketplace — same install path work
 
 That's it. Updates land via `/plugin marketplace update align` then `/plugin install align@align` again.
 
+**Counted alternative:** to install via the [skills.sh](https://www.skills.sh) CLI — which lets us see real install numbers — run `npx skills add ggrigo/align`. The native `/plugin` path above is fully supported; this one just routes through a channel that counts installs.
+
 ### Fallback: manual `.plugin` upload (Cowork)
 
 If you'd rather sideload, download `align-X.Y.Z.plugin` from the [Releases page](https://github.com/ggrigo/align/releases) and upload via Cowork → Settings → Plugins → Upload plugin.
