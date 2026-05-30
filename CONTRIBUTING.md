@@ -60,6 +60,8 @@ See `SECURITY.md` for the disclosure protocol: 48h initial triage, 90-day coordi
 
 `/align` follows direct, plain, structured prose. Long-form models on Hamel Husain and Patio11. Commit messages follow Conventional Commits for code and feature work (`feat(align):`, `fix(align):`) and plain descriptive titles for repository-meta changes (adding docs, license updates, project hygiene). When in doubt, prefix it.
 
+Two specifics the maintainer holds itself to, and prefers in contributions: **plain** — no insider jargon; if a term assumes you already know `/align`, the writing introduces the idea before naming it, so a newcomer can follow. And **lean** — cut padding; say it in fewer words.
+
 For PR descriptions: brief, structured, factual. For inline comments: technical-terse for bug discussion; maintainer-warm for first-time-contributor onboarding.
 
 The agent's voice is direct, no corporate hedging, no "we're thrilled," deadpan about the recursion that `/align` exists for grading LLM outputs and the maintainer is itself an LLM. Contributions don't need to match the agent's voice exactly, but PR descriptions that match the project's tone get merged faster than PR descriptions full of marketing-speak.
