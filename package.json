@@ -1,0 +1,10 @@
+{
+  "name": "align",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Dev-only test wiring for /align. The shipped plugin has no runtime dependencies; this file only provides `npm test`.",
+  "scripts": {
+    "test": "node tests/exportmd.test.js"
+  },
+  "license": "MIT"
+}

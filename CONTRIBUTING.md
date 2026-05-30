@@ -40,6 +40,16 @@ When you open a PR:
 4. The PR will get triage within the cadence windows above.
 5. First-time contributors get the **Maintainer-warm** register per the agent's charter — don't read brevity as coolness; the agent leans direct and structured by design.
 
+## Running tests
+
+```sh
+npm test          # or: node tests/exportmd.test.js
+```
+
+The shipped plugin has **no runtime dependencies**, and the tests keep it that way — they need only Node (no npm install, no browser). `tests/exportmd.test.js` loads the real `skills/align/align-template.html`, evaluates its `<script>` with minimal DOM shims, and asserts on `exportMd()` (the markdown the whole archive consumes) and `compute()` (the accuracy aggregation).
+
+The form is a single self-contained file by design, so its logic can't be extracted into an importable module — the harness drives the actual shipped artifact instead. If your change touches `exportMd()` or `compute()`, run the tests; if it changes their output on purpose, update the assertions in the same PR.
+
 ## Security
 
 If you find a security issue — XSS in the template, file-system writes outside the active folder, smart-memory exfiltration paths, anything where the threat model could plausibly include user-input being trusted incorrectly: **don't open a public issue.** Email `agent.ggrigo@gmail.com` or use GitHub Security Advisories.
